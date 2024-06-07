@@ -124,6 +124,8 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
 
     ax.legend(loc='upper left', fontsize=10)
 
+    ax.set_xlim(left=0)
+
     ratio = 1.0
 
     x_left, x_right = ax.get_xlim()
@@ -211,12 +213,14 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
 
     y = np.abs(bin_data[:, 3] * pixel_size)
 
+    weights = np.ones_like(y) / float(len(y))
+
     mpl.rcParams['font.family'] = 'sans-serif'
     mpl.rcParams['font.size'] = 12
 
     fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
 
-    plt.hist(y, bins=10, edgecolor='black', linewidth=1.1, color='C3')
+    plt.hist(y, bins=10, weights=weights, edgecolor='black', linewidth=1.1, color='C3')
 
     ratio = 1.0
 
@@ -335,9 +339,9 @@ def load_all_data(path):
 
 def extract_xy(loc_data):
 
-    x = loc_data[:, 2]
+    x = loc_data[:, 2].reshape(loc_data.shape[0], 1)
 
-    y = loc_data[:, 3]
+    y = loc_data[:, 3].reshape(loc_data.shape[0], 1)
 
     xy_only = np.hstack((x, y))
 
@@ -345,8 +349,8 @@ def extract_xy(loc_data):
 
 def save_xy_locs(xy_data, title, out):
 
-    np.savetxt(out + str(title) + 'xy_for_FRC.txt', xy_data,
-               fmt='%.5e')
+    np.savetxt(out + '/' + str(title) + 'xy_for_FRC.txt', xy_data,
+               fmt='%.5e', delimiter='\t')
 
 def load_frc_plot_data(path):
 
@@ -355,7 +359,30 @@ def load_frc_plot_data(path):
 
     return plot_data
 
-def plot_frc_curve(frc_data, out):
+def calc_frc_res(frc_data, title, out):
+
+    v = frc_data[:, 0]
+    frc = frc_data[:, 1]
+    thold = frc_data[:, 2]
+
+    intercept = np.argwhere(np.diff(np.sign(frc - thold))).flatten()
+
+    res_fourier = v[intercept][0]
+
+    res_real_space = 1 / res_fourier
+
+    with open(out + '/' + str(title) + 'resolution.txt', 'w') as f:
+
+        f.write('The resolution in spatial frequency is: '
+                + str(res_fourier) + ' nm^-1' + '\n')
+
+        f.write('The real space resolution is: '
+                + str(res_real_space) + ' nm' + '\n')
+
+    return res_fourier, frc[intercept][0]
+
+
+def plot_frc_curve(frc_data, x_res, y_res, title, out):
 
     plt.ioff()
 
@@ -369,19 +396,19 @@ def plot_frc_curve(frc_data, out):
 
     x_incr = round(x_incr, 3)
 
-    y_incr = (np.max(frc) - np.min(frc)) / 10
-
-    y_incr = round(y_incr, 3)
-
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 12
+    mpl.rcParams['font.size'] = 18
 
-    fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
+    fig, ax = plt.subplots(figsize=(14, 14), dpi=500)
 
-    ax.plot(spatial_freq, frc, 'C3', label='correlation')
-    ax.plot(spatial_freq, thold, 'b', label='threshold')
+    ax.plot(spatial_freq, frc, 'C3', label='Correlation', linewidth=3.5)
+    ax.plot(spatial_freq, thold, 'b', label='Threshold', linewidth=3.5)
+    ax.plot(x_res, y_res, 'C4', marker='.', markersize=18, markeredgecolor='k')
 
-    ax.legend(loc='upper left', fontsize=10)
+    ax.legend(loc='upper right', fontsize=14)
+
+    ax.set_ylim(bottom=np.min(frc) - 0.05, top=1)
+    ax.set_xlim(left=0)
 
     ratio = 1.0
 
@@ -389,15 +416,15 @@ def plot_frc_curve(frc_data, out):
     y_low, y_high = ax.get_ylim()
     ax.set_aspect(abs((x_right - x_left) / (y_low - y_high)) * ratio)
 
-    ax.tick_params(axis='y', which='major', length=6, direction='in')
+    ax.tick_params(axis='y', which='major', length=6, direction='in', pad=10)
     ax.tick_params(axis='y', which='minor', length=3, direction='in')
-    ax.tick_params(axis='x', which='major', length=6, direction='in')
+    ax.tick_params(axis='x', which='major', length=6, direction='in', pad=10)
     ax.tick_params(axis='x', which='minor', length=3, direction='in')
 
     ax.xaxis.set_major_locator(MultipleLocator(x_incr))
     ax.xaxis.set_minor_locator(MultipleLocator(x_incr / 10))
-    ax.yaxis.set_major_locator(MultipleLocator(y_incr))
-    ax.yaxis.set_minor_locator(MultipleLocator(y_incr / 10))
+    ax.yaxis.set_major_locator(MultipleLocator(0.1))
+    ax.yaxis.set_minor_locator(MultipleLocator(0.01))
 
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
@@ -411,10 +438,10 @@ def plot_frc_curve(frc_data, out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Spatial frequency (nm)', labelpad=12, fontsize=16)
-    ax.set_ylabel('Correlation', labelpad=12, fontsize=16)
+    ax.set_xlabel('Spatial frequency (nm^-1)', labelpad=12, fontsize=24)
+    ax.set_ylabel('Fourier Ring Correlation', labelpad=12, fontsize=24)
 
-    plt.savefig(out + '/frc_plot.png')
+    plt.savefig(out + '/' + str(title) + 'frc_plot.png')
 
 ## Calculate mean and SD for all beads
 
@@ -473,6 +500,7 @@ def save_mean_sd(drift_values, folder_path):
 
 
 def overall_meansd(folder_path, out):
+
     full_path = os.path.join(folder_path, 'all_bead_drift.txt')
 
     if os.path.isfile(full_path) is False:
@@ -513,6 +541,8 @@ def plot_stripplot(folder_path, out):
         raise OSError('Bead drift data not found in specified folder.')
 
     df = pd.read_csv(full_path, sep='\t')
+
+    df[df.columns[1]] = df[df.columns[1]].abs()
 
     means = df[df.columns[1]]
 

@@ -6,8 +6,6 @@ pixel_size = 97.5
 
 timestep = 0.03
 
-title = str()
-
 ## Load data
 
 plot_data = input('Please enter path to file: ')
