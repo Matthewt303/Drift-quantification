@@ -6,7 +6,7 @@ loc_path = input('Please enter path to localisations: ')
 
 out = input('Please enter path for saving plots: ')
 
-roi_data = plot_drift.load_locs(loc_path)
+roi_data = plot_drift.load_roi_locs(loc_path)
 
 ## Plot
 

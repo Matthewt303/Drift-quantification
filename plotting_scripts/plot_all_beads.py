@@ -2,7 +2,7 @@
 
 from drift_quant.plotting_scripts import plot_drift
 
-pixel_resol = 97.5
+pixel_resol = 100
 
 ## 1
 
@@ -22,4 +22,6 @@ plot_drift.save_mean_sd(meansds, folder)
 plot_drift.overall_meansd(folder, out)
 
 plot_drift.plot_stripplot(folder, out)
+
+plot_drift.plot_max_stripplot(folder, out)
 

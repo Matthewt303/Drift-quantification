@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import scipy.io
-from matplotlib.ticker import MultipleLocator
+from matplotlib.ticker import MultipleLocator, AutoMinorLocator
 import os
 import math
 import seaborn as sns
@@ -76,42 +76,8 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
 
     y_drift = line_data[:, 3] * pixel_size
 
-    maxima = np.maximum(x_drift, y_drift)
-
-    minima = np.minimum(x_drift, y_drift)
-
-    maxima_bins = np.maximum(x_drift_bins, y_drift_bins)
-
-    minima_bins = np.minimum(x_drift_bins, y_drift_bins)
-
-    true_max = int()
-
-    true_min = int()
-
-    if np.max(maxima) > np.max(maxima_bins):
-
-        true_max = round(np.nanmax(maxima), 5)
-
-    else:
-
-        true_max = round(np.nanmax(maxima_bins), 5)
-
-    if np.min(minima) < np.min(minima_bins):
-
-        true_min = round(np.nanmin(minima), 5)
-
-    else:
-
-        true_min = round(np.nanmin(minima_bins), 5)
-
-    increment = round((true_max - true_min) / 10, 1)
-
-    x_incr = (np.max(frames2) - np.min(frames2)) / 10
-
-    t_incr = int(math.ceil(x_incr / 100.0)) * 100
-
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 12
+    mpl.rcParams['font.size'] = 20
 
     fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
 
@@ -122,7 +88,7 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     ax.plot(frames2, x_drift, 'r', label='x-axis drift')
     ax.plot(frames2, y_drift, 'b', label='y-axis drift')
 
-    ax.legend(loc='upper left', fontsize=10)
+    ax.legend(loc='upper left', fontsize=16)
 
     ax.set_xlim(left=0)
 
@@ -137,10 +103,8 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     ax.tick_params(axis='x', which='major', length=6, direction='in')
     ax.tick_params(axis='x', which='minor', length=3, direction='in')
 
-    ax.xaxis.set_major_locator(MultipleLocator(t_incr))
-    ax.xaxis.set_minor_locator(MultipleLocator(t_incr/ 10))
-    ax.yaxis.set_major_locator(MultipleLocator(increment))
-    ax.yaxis.set_minor_locator(MultipleLocator(increment / 10))
+    ax.xaxis.set_minor_locator(AutoMinorLocator(10))
+    ax.yaxis.set_minor_locator(AutoMinorLocator(10))
 
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
@@ -154,8 +118,8 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Time (s)', labelpad=12, fontsize=16)
-    ax.set_ylabel('Drift (nm)', labelpad=12, fontsize=16)
+    ax.set_xlabel('Time (s)', labelpad=6, fontsize=28)
+    ax.set_ylabel('Drift (nm)', labelpad=6, fontsize=28)
 
     plt.savefig(out + '/' + str(title) + '.png')
 
@@ -166,12 +130,14 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
 
     x = np.abs(bin_data[:, 1] * pixel_size)
 
+    weights = np.ones_like(x) / float(len(x))
+
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 12
+    mpl.rcParams['font.size'] = 20
 
-    fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
+    fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
-    plt.hist(x, bins=10, edgecolor='black', linewidth=1.1, color='C3')
+    plt.hist(x, bins=10, weights=weights, edgecolor='black', linewidth=1.1, color='C3')
 
     ratio = 1.0
 
@@ -184,10 +150,8 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
     ax.tick_params(axis='x', which='major', length=6, direction='in')
     ax.tick_params(axis='x', which='minor', length=3, direction='in')
 
-    #ax.xaxis.set_major_locator(MultipleLocator(10000))
-    #ax.xaxis.set_minor_locator(MultipleLocator(1000))
-    #ax.yaxis.set_major_locator(MultipleLocator(increment))
-    #ax.yaxis.set_minor_locator(MultipleLocator(increment / 10))
+    #ax.xaxis.set_minor_locator(AutoMinorLocator(10))
+    ax.yaxis.set_minor_locator(AutoMinorLocator(10))
 
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
@@ -201,8 +165,8 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Drift along x-axis (nm)', labelpad=12, fontsize=16)
-    ax.set_ylabel('Number', labelpad=12, fontsize=16)
+    ax.set_xlabel('Drift along x-axis (nm)', labelpad=12, fontsize=28)
+    ax.set_ylabel('Proportion', labelpad=12, fontsize=28)
 
     plt.savefig(out + '/' + str(title) + 'x_hist.png')
 
@@ -216,9 +180,9 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
     weights = np.ones_like(y) / float(len(y))
 
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 12
+    mpl.rcParams['font.size'] = 20
 
-    fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
+    fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
     plt.hist(y, bins=10, weights=weights, edgecolor='black', linewidth=1.1, color='C3')
 
@@ -233,10 +197,8 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
     ax.tick_params(axis='x', which='major', length=6, direction='in')
     ax.tick_params(axis='x', which='minor', length=3, direction='in')
 
-    # ax.xaxis.set_major_locator(MultipleLocator(10000))
-    # ax.xaxis.set_minor_locator(MultipleLocator(1000))
-    # ax.yaxis.set_major_locator(MultipleLocator(increment))
-    # ax.yaxis.set_minor_locator(MultipleLocator(increment / 10))
+    #ax.xaxis.set_minor_locator(AutoMinorLocator(10))
+    ax.yaxis.set_minor_locator(AutoMinorLocator(10))
 
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
@@ -250,8 +212,8 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Drift along y-axis (nm)', labelpad=12, fontsize=16)
-    ax.set_ylabel('Number', labelpad=12, fontsize=16)
+    ax.set_xlabel('Drift along y-axis (nm)', labelpad=12, fontsize=28)
+    ax.set_ylabel('Proportion', labelpad=12, fontsize=28)
 
     plt.savefig(out + '/' + str(title) + 'y_hist.png')
 
@@ -286,16 +248,20 @@ def plot_locprec(loc_data, out):
 
     plt.ioff()
 
-    locprec =  loc_data[:, -1]
+    locprec = loc_data[:, -1]
+
+    locprec = locprec[(locprec < 100)]
 
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 12
+    mpl.rcParams['font.size'] = 20
 
-    fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
+    fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
-    plt.hist(locprec, bins='rice', edgecolor='black', linewidth=1.1, color='C3')
+    ax.hist(locprec, bins=50, edgecolor='black', linewidth=1.1, color='C3')
 
     ratio = 1.0
+
+    ax.set_xlim(left=0, right=50)
 
     x_left, x_right = ax.get_xlim()
     y_low, y_high = ax.get_ylim()
@@ -306,10 +272,7 @@ def plot_locprec(loc_data, out):
     ax.tick_params(axis='x', which='major', length=6, direction='in')
     ax.tick_params(axis='x', which='minor', length=3, direction='in')
 
-    # ax.xaxis.set_major_locator(MultipleLocator(10000))
-    # ax.xaxis.set_minor_locator(MultipleLocator(1000))
-    # ax.yaxis.set_major_locator(MultipleLocator(increment))
-    # ax.yaxis.set_minor_locator(MultipleLocator(increment / 10))
+    ax.yaxis.set_minor_locator(AutoMinorLocator(10))
 
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
@@ -323,8 +286,8 @@ def plot_locprec(loc_data, out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Localisation Precision (nm)', labelpad=12, fontsize=16)
-    ax.set_ylabel('Number', labelpad=12, fontsize=16)
+    ax.set_xlabel('Localisation Precision (nm)', labelpad=6, fontsize=28)
+    ax.set_ylabel('Number', labelpad=6, fontsize=28)
 
     plt.savefig(out + '/roi_loc_prec_hist.png')
 
@@ -382,7 +345,7 @@ def calc_frc_res(frc_data, title, out):
     return res_fourier, frc[intercept][0]
 
 
-def plot_frc_curve(frc_data, x_res, y_res, title, out):
+def plot_frc_curve(frc_data, rcc_data, x1, y1, x2, y2, title, out):
 
     plt.ioff()
 
@@ -392,18 +355,20 @@ def plot_frc_curve(frc_data, x_res, y_res, title, out):
 
     thold = frc_data[:, 2]
 
-    x_incr = (np.max(spatial_freq) - np.min(spatial_freq)) / 10
+    spatial_freq_rcc = rcc_data[:, 0]
 
-    x_incr = round(x_incr, 3)
+    frc_rcc = rcc_data[:, 1]
 
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 18
+    mpl.rcParams['font.size'] = 20
 
-    fig, ax = plt.subplots(figsize=(14, 14), dpi=500)
+    fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
-    ax.plot(spatial_freq, frc, 'C3', label='Correlation', linewidth=3.5)
-    ax.plot(spatial_freq, thold, 'b', label='Threshold', linewidth=3.5)
-    ax.plot(x_res, y_res, 'C4', marker='.', markersize=18, markeredgecolor='k')
+    ax.plot(spatial_freq, frc, 'C3', label='Without RCC', linewidth=3.5)
+    ax.plot(spatial_freq, thold, 'C0', label='Threshold', linewidth=3.5)
+    ax.plot(spatial_freq_rcc, frc_rcc, 'C1', label='With RCC', linewidth=3.5)
+    ax.plot(x1, thold[0], 'C4', marker='.', markersize=18, markeredgecolor='k')
+    ax.plot(x2, thold[0], 'C4', marker='.', markersize=18, markeredgecolor='k')
 
     ax.legend(loc='upper right', fontsize=14)
 
@@ -421,10 +386,8 @@ def plot_frc_curve(frc_data, x_res, y_res, title, out):
     ax.tick_params(axis='x', which='major', length=6, direction='in', pad=10)
     ax.tick_params(axis='x', which='minor', length=3, direction='in')
 
-    ax.xaxis.set_major_locator(MultipleLocator(x_incr))
-    ax.xaxis.set_minor_locator(MultipleLocator(x_incr / 10))
-    ax.yaxis.set_major_locator(MultipleLocator(0.1))
-    ax.yaxis.set_minor_locator(MultipleLocator(0.01))
+    ax.xaxis.set_minor_locator(AutoMinorLocator(10))
+    ax.yaxis.set_minor_locator(AutoMinorLocator(10))
 
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
@@ -438,8 +401,8 @@ def plot_frc_curve(frc_data, x_res, y_res, title, out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Spatial frequency (nm^-1)', labelpad=12, fontsize=24)
-    ax.set_ylabel('Fourier Ring Correlation', labelpad=12, fontsize=24)
+    ax.set_xlabel('Spatial frequency (nm^-1)', labelpad=12, fontsize=28)
+    ax.set_ylabel('Fourier Ring Correlation', labelpad=12, fontsize=28)
 
     plt.savefig(out + '/' + str(title) + 'frc_plot.png')
 
@@ -465,7 +428,7 @@ def calculate_mean_sd(all_paths, pixel_res):
 
     z = len(all_paths)
 
-    mean_std_data = np.zeros((2 * z, 2))
+    mean_std_max_data = np.zeros((2 * z, 3))
 
     axes = np.empty((2 * z, 1), dtype=str)
 
@@ -478,17 +441,21 @@ def calculate_mean_sd(all_paths, pixel_res):
 
         std_x = np.nanstd(values[:, 1]) * pixel_res
 
+        max_x = np.nanmax(np.abs(values[:, 1])) * pixel_res
+
         mean_y = np.nanmean(values[:, 3]) * pixel_res
 
         std_y = np.nanstd(values[:, 3]) * pixel_res
 
-        mean_std_data[i, 0], mean_std_data[i, 1] = mean_x, std_x
+        max_y = np.nanmax(np.abs(values[:, 3])) * pixel_res
 
-        mean_std_data[i + z, 0], mean_std_data[i + z, 1] = mean_y, std_y
+        mean_std_max_data[i, 0], mean_std_max_data[i, 1], mean_std_max_data[i, 2] = mean_x, std_x, max_x
+
+        mean_std_max_data[i + z, 0], mean_std_max_data[i + z, 1], mean_std_max_data[i + z, 2] = mean_y, std_y, max_y
 
         axes[i], axes[i + z] = 'x', 'y'
 
-    all_drift = np.hstack((axes, mean_std_data))
+    all_drift = np.hstack((axes, mean_std_max_data))
 
     return all_drift
 
@@ -496,7 +463,7 @@ def save_mean_sd(drift_values, folder_path):
 
     np.savetxt(folder_path + '/all_bead_drift.txt', drift_values,
                fmt='%s', delimiter='\t',
-               header='Axis \t Mean drift (nm) \t Drift SD (nm)')
+               header='Axis \t Mean drift (nm) \t Drift SD (nm) \t Maximum drift (nm)')
 
 
 def overall_meansd(folder_path, out):
@@ -550,17 +517,17 @@ def plot_stripplot(folder_path, out):
 
     mean_y = np.mean(means[int(len(means) / 2): len(means)])
 
-    fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
+    fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
-    sns.set(font_scale=1.2)
-
-    sns.set_context(rc={'xtick.labelsize': 14, 'ytick.labelsize': 14})
     sns.set_theme(font='sans-serif')
 
     graph = sns.stripplot(x=df.columns[0], y=df.columns[1], data=df,
-                          color='#00008b')
-    graph.axhline(mean_x, xmin=0.1, xmax=0.4)
-    graph.axhline(mean_y, xmin=0.6, xmax=0.9)
+                          s=12, color='#00008b')
+    graph.axhline(mean_x, xmin=0.1, xmax=0.4, linewidth=3.5)
+    graph.axhline(mean_y, xmin=0.6, xmax=0.9, linewidth=3.5)
+    graph.tick_params(labelsize=20, pad=10)
+
+    ax.set_ylim(bottom=0)
 
     ratio = 1.0
 
@@ -573,10 +540,7 @@ def plot_stripplot(folder_path, out):
     ax.tick_params(axis='x', which='major', length=6, direction='in')
     ax.tick_params(axis='x', which='minor', length=3, direction='in')
 
-    #ax.xaxis.set_major_locator(MultipleLocator(x_incr))
-    #ax.xaxis.set_minor_locator(MultipleLocator(x_incr / 10))
-    #ax.yaxis.set_major_locator(MultipleLocator(y_incr))
-    #ax.yaxis.set_minor_locator(MultipleLocator(y_incr / 10))
+    ax.yaxis.set_minor_locator(AutoMinorLocator(11))
 
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
@@ -590,7 +554,68 @@ def plot_stripplot(folder_path, out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Axis', labelpad=12, fontsize=18)
-    ax.set_ylabel(df.columns[1], labelpad=12, fontsize=18)
+    ax.set_xlabel('Axis', labelpad=12, fontsize=28)
+    ax.set_ylabel(df.columns[1], labelpad=12, fontsize=28)
 
     plt.savefig(out + '/all_beads.png')
+
+def plot_max_stripplot(folder_path, out):
+
+    plt.ioff()
+
+    full_path = os.path.join(folder_path, 'all_bead_drift.txt')
+
+    if os.path.isfile(full_path) is False:
+
+        raise OSError('Bead drift data not found in specified folder.')
+
+    df = pd.read_csv(full_path, sep='\t')
+
+    plt.rcParams['xtick.bottom'] = True
+    plt.rcParams['ytick.left'] = True
+
+    fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
+
+    sns.set_theme(font='sans-serif')
+
+    sns.set_style('ticks')
+
+    fig.patch.set_facecolor('white')
+    ax.set_facecolor('white')
+
+    graph = sns.stripplot(x=df.columns[0], y=df.columns[3], data=df,
+                          s=12, color='#00008b')
+    graph.tick_params(labelsize=20, pad=10)
+
+    ax.set_ylim(bottom=0)
+
+    ratio = 1.0
+
+    x_left, x_right = ax.get_xlim()
+    y_low, y_high = ax.get_ylim()
+    ax.set_aspect(abs((x_right - x_left) / (y_low - y_high)) * ratio)
+
+    ax.tick_params(axis='y', which='major', length=6, direction='in')
+    ax.tick_params(axis='y', which='minor', length=3, direction='in')
+    ax.tick_params(axis='x', which='major', length=6, direction='in')
+    ax.tick_params(axis='x', which='minor', length=3, direction='in')
+
+    ax.yaxis.set_minor_locator(AutoMinorLocator(11))
+
+    ax.xaxis.label.set_color('black')
+    ax.yaxis.label.set_color('black')
+
+    ax.spines['bottom'].set_color('black')
+    ax.spines['top'].set_color('black')
+    ax.spines['right'].set_color('black')
+    ax.spines['left'].set_color('black')
+    ax.spines['bottom'].set_linewidth(1.0)
+    ax.spines['top'].set_linewidth(1.0)
+    ax.spines['right'].set_linewidth(1.0)
+    ax.spines['left'].set_linewidth(1.0)
+
+    ax.set_xlabel('Axis', labelpad=12, fontsize=28)
+    ax.set_ylabel(df.columns[3], labelpad=12, fontsize=28)
+
+    plt.savefig(out + '/all_beads_maxima.png')
+    plt.close(fig)
