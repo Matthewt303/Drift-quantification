@@ -31,6 +31,43 @@ def extract_cont_data(all_data):
 
     return cont_data
 
+def zero_initials(bin_data, line_data):
+
+    bins = bin_data.copy()
+
+    lines = line_data.copy()
+
+    x0 = lines[0, 1]
+
+    y0 = lines[0, 3]
+
+    if x0 >= 0:
+
+        lines_corrected = lines[:, 1] - x0
+
+        bins_corrected = bins[:, 1] - x0
+
+    else:
+
+        lines_corrected = lines[:, 1] + x0
+
+        bins_corrected = bins[:, 1] + x0
+
+    if y0 >= 0:
+
+        lines_corrected = lines[:, 3] - y0
+
+        bins_corrected = bins[:, 3] - y0
+
+    else:
+
+        lines_corrected = lines[:, 3] + y0
+
+        bins_corrected = bins[:, 3] + y0
+
+    return lines_corrected, bins_corrected
+
+
 ## Functions for SMAP drift plots
 
 def load_mat_data(mat_path):

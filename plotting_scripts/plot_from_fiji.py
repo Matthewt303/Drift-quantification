@@ -21,12 +21,14 @@ bins = plot_drift.extract_bins(all_data)
 
 lines = plot_drift.extract_cont_data(all_data)
 
+bins_cor, lines_cor = plot_drift.zero_initials(bins, lines)
+
 ## Plot
 
-plot_drift.plot_all_data(bins, lines, pixel_size, timestep, title, output_location)
+plot_drift.plot_all_data(bins_cor, lines_cor, pixel_size, timestep, title, output_location)
 
-plot_drift.plot_x_histogram(bins, pixel_size, title, output_location)
+plot_drift.plot_x_histogram(bins_cor, pixel_size, title, output_location)
 
-plot_drift.plot_y_histogram(bins, pixel_size, title, output_location)
+plot_drift.plot_y_histogram(bins_cor, pixel_size, title, output_location)
 
-plot_drift.mean_and_std(bins, pixel_size, title, output_location)
+plot_drift.mean_and_std(bins_cor, pixel_size, title, output_location)
