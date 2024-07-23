@@ -33,39 +33,39 @@ def extract_cont_data(all_data):
 
 def zero_initials(bin_data, line_data):
 
-    bins = bin_data.copy()
+    bins_cor = bin_data.copy()
 
-    lines = line_data.copy()
+    lines_cor = line_data.copy()
 
-    x0 = lines[0, 1]
+    x0 = lines_cor[0, 1]
 
-    y0 = lines[0, 3]
+    y0 = lines_cor[0, 3]
 
-    if x0 >= 0:
+    if x0 > 0:
 
-        lines_corrected = lines[:, 1] - x0
+        lines_cor[:, 1] -= x0
 
-        bins_corrected = bins[:, 1] - x0
+        bins_cor[:, 1] -= x0
 
-    else:
+    elif x0 < 0:
 
-        lines_corrected = lines[:, 1] + x0
+        lines_cor[:, 1] += np.abs(x0)
 
-        bins_corrected = bins[:, 1] + x0
+        bins_cor[:, 1] += np.abs(x0)
 
-    if y0 >= 0:
+    if y0 > 0:
 
-        lines_corrected = lines[:, 3] - y0
+        lines_cor[:, 3] -= y0
 
-        bins_corrected = bins[:, 3] - y0
+        bins_cor[:, 3] -= y0
 
-    else:
+    elif y0 < 0:
 
-        lines_corrected = lines[:, 3] + y0
+        lines_cor[:, 3] += np.abs(y0)
 
-        bins_corrected = bins[:, 3] + y0
+        bins_cor[:, 3] += np.abs(y0)
 
-    return lines_corrected, bins_corrected
+    return bins_cor, lines_cor
 
 
 ## Functions for SMAP drift plots
@@ -116,7 +116,7 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     mpl.rcParams['font.family'] = 'sans-serif'
     mpl.rcParams['font.size'] = 20
 
-    fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
+    fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
     ax.scatter(frames1, x_drift_bins, s=25,
                 facecolors='none', edgecolors='r')
@@ -167,6 +167,8 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
 
     x = np.abs(bin_data[:, 1] * pixel_size)
 
+    x = x[~np.isnan(x)]
+
     weights = np.ones_like(x) / float(len(x))
 
     mpl.rcParams['font.family'] = 'sans-serif'
@@ -213,6 +215,8 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
     plt.ioff()
 
     y = np.abs(bin_data[:, 3] * pixel_size)
+
+    y = y[~np.isnan(y)]
 
     weights = np.ones_like(y) / float(len(y))
 
@@ -496,27 +500,27 @@ def calculate_mean_sd(all_paths, pixel_res):
 
     return all_drift
 
-def save_mean_sd(drift_values, folder_path):
+def save_mean_sd(drift_values, out):
 
-    np.savetxt(folder_path + '/all_bead_drift.txt', drift_values,
+    np.savetxt(out + '/all_bead_drift.txt', drift_values,
                fmt='%s', delimiter='\t',
                header='Axis \t Mean drift (nm) \t Drift SD (nm) \t Maximum drift (nm)')
 
 
-def overall_meansd(folder_path, out):
+def overall_meansd(out):
 
-    full_path = os.path.join(folder_path, 'all_bead_drift.txt')
+    full_path = os.path.join(out, 'all_bead_drift.txt')
 
     if os.path.isfile(full_path) is False:
         raise OSError('Bead drift data not found in specified folder.')
 
     df = pd.read_csv(full_path, sep='\t')
 
-    means = df[df.columns[1]]
-
-    means = means.abs()
+    means = df[df.columns[1]].abs()
 
     sds = df[df.columns[2]]
+
+    maxima = df[df.columns[3]]
 
     mean_x = np.mean(means[0: int(len(means) / 2)])
 
@@ -526,19 +530,25 @@ def overall_meansd(folder_path, out):
 
     mean_sd_y = np.mean(sds[int(len(means) / 2): len(sds)])
 
-    with open(folder_path + '/overall_stats.txt', 'w') as f:
+    mean_max_x = np.mean(maxima[0: int(len(maxima) / 2)])
+
+    mean_max_y = np.mean(maxima[int(len(maxima) / 2): len(maxima)])
+
+    with open(out + '/overall_stats.txt', 'w') as f:
 
         f.write('Mean drift along x: ' + str(mean_x) + 'nm \n')
         f.write('Mean drift along y: ' + str(mean_y) + 'nm \n')
         f.write('Mean sd along x: ' + str(mean_sd_x) + 'nm \n')
-        f.write('Mean sd along y: ' + str(mean_sd_y) + 'nm')
+        f.write('Mean sd along y: ' + str(mean_sd_y) + 'nm \n')
+        f.write('Mean maxima along x: ' + str(mean_max_x) + 'nm \n')
+        f.write('Mean maxima along y: ' + str(mean_max_y) + 'nm \n')
 
 
-def plot_stripplot(folder_path, out):
+def plot_stripplot(out):
 
     plt.ioff()
 
-    full_path = os.path.join(folder_path, 'all_bead_drift.txt')
+    full_path = os.path.join(out, 'all_bead_drift.txt')
 
     if os.path.isfile(full_path) is False:
 
@@ -546,9 +556,7 @@ def plot_stripplot(folder_path, out):
 
     df = pd.read_csv(full_path, sep='\t')
 
-    df[df.columns[1]] = df[df.columns[1]].abs()
-
-    means = df[df.columns[1]]
+    means = df[df.columns[1]].abs()
 
     mean_x = np.mean(means[0: int(len(means) / 2)])
 
@@ -596,17 +604,23 @@ def plot_stripplot(folder_path, out):
 
     plt.savefig(out + '/all_beads.png')
 
-def plot_max_stripplot(folder_path, out):
+def plot_max_stripplot(out):
 
     plt.ioff()
 
-    full_path = os.path.join(folder_path, 'all_bead_drift.txt')
+    full_path = os.path.join(out, 'all_bead_drift.txt')
 
     if os.path.isfile(full_path) is False:
 
         raise OSError('Bead drift data not found in specified folder.')
 
     df = pd.read_csv(full_path, sep='\t')
+
+    maxima = df[df.columns[3]]
+
+    maxima_x = np.mean(maxima[0: int(len(maxima) / 2)])
+
+    maxima_y = np.mean(maxima[int(len(maxima) / 2): len(maxima)])
 
     plt.rcParams['xtick.bottom'] = True
     plt.rcParams['ytick.left'] = True
@@ -620,8 +634,11 @@ def plot_max_stripplot(folder_path, out):
     fig.patch.set_facecolor('white')
     ax.set_facecolor('white')
 
+    #graph = sns.boxplot(data=df, x=df.columns[0], y=df.columns[3])
     graph = sns.stripplot(x=df.columns[0], y=df.columns[3], data=df,
                           s=12, color='#00008b')
+    graph.axhline(maxima_x, xmin=0.1, xmax=0.4, linewidth=3.5)
+    graph.axhline(maxima_y, xmin=0.6, xmax=0.9, linewidth=3.5)
     graph.tick_params(labelsize=20, pad=10)
 
     ax.set_ylim(bottom=0)
