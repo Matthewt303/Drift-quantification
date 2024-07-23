@@ -176,7 +176,7 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
 
     fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
-    plt.hist(x, bins=10, weights=weights, edgecolor='black', linewidth=1.1, color='C3')
+    plt.hist(x, bins=20, weights=weights, edgecolor='black', linewidth=1.1, color='C3')
 
     ratio = 1.0
 
@@ -205,7 +205,7 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
     ax.spines['left'].set_linewidth(1.0)
 
     ax.set_xlabel('Drift along x-axis (nm)', labelpad=12, fontsize=28)
-    ax.set_ylabel('Proportion', labelpad=12, fontsize=28)
+    ax.set_ylabel('Frequency', labelpad=12, fontsize=28)
 
     plt.savefig(out + '/' + str(title) + 'x_hist.png')
 
@@ -225,7 +225,7 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
 
     fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
-    plt.hist(y, bins=10, weights=weights, edgecolor='black', linewidth=1.1, color='C3')
+    plt.hist(y, bins=20, weights=weights, edgecolor='black', linewidth=1.1, color='C3')
 
     ratio = 1.0
 
@@ -254,7 +254,7 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
     ax.spines['left'].set_linewidth(1.0)
 
     ax.set_xlabel('Drift along y-axis (nm)', labelpad=12, fontsize=28)
-    ax.set_ylabel('Proportion', labelpad=12, fontsize=28)
+    ax.set_ylabel('Frequency', labelpad=12, fontsize=28)
 
     plt.savefig(out + '/' + str(title) + 'y_hist.png')
 
@@ -457,7 +457,7 @@ def extract_files(folder_path):
 
     for plot_file in plot_files:
 
-        if plot_file[0:4] == 'plot':
+        if plot_file[0:4] == 'fidu':
 
             plot_path = os.path.join(folder_path, plot_file)
 
@@ -566,7 +566,7 @@ def plot_stripplot(out):
 
     sns.set_theme(font='sans-serif')
 
-    graph = sns.stripplot(x=df.columns[0], y=df.columns[1], data=df,
+    graph = sns.stripplot(x=df.columns[0], y=means, data=df,
                           s=12, color='#00008b')
     graph.axhline(mean_x, xmin=0.1, xmax=0.4, linewidth=3.5)
     graph.axhline(mean_y, xmin=0.6, xmax=0.9, linewidth=3.5)
@@ -635,7 +635,7 @@ def plot_max_stripplot(out):
     ax.set_facecolor('white')
 
     #graph = sns.boxplot(data=df, x=df.columns[0], y=df.columns[3])
-    graph = sns.stripplot(x=df.columns[0], y=df.columns[3], data=df,
+    graph = sns.stripplot(x=df.columns[0], y=maxima, data=df,
                           s=12, color='#00008b')
     graph.axhline(maxima_x, xmin=0.1, xmax=0.4, linewidth=3.5)
     graph.axhline(maxima_y, xmin=0.6, xmax=0.9, linewidth=3.5)

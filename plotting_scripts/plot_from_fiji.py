@@ -2,7 +2,7 @@
 
 from drift_quant.plotting_scripts import plot_drift
 
-pixel_size = 97.5
+pixel_size = 1
 
 timestep = 100
 

@@ -2,7 +2,7 @@
 
 from drift_quant.plotting_scripts import plot_drift
 
-pixel_resol = 100
+pixel_resol = 1
 
 ## 1
 
