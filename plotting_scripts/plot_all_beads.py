@@ -21,7 +21,6 @@ plot_drift.save_mean_sd(meansds, out)
 
 plot_drift.overall_meansd(out)
 
-plot_drift.plot_stripplot(out)
+plot_drift.plot_boxplot(out)
 
-plot_drift.plot_max_stripplot(out)
-
+plot_drift.plot_max_boxplot(out)

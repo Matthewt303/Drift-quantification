@@ -118,9 +118,9 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
 
     fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
-    ax.scatter(frames1, x_drift_bins, s=25,
+    ax.scatter(frames1, x_drift_bins, s=10, alpha=0.2,
                 facecolors='none', edgecolors='r')
-    ax.scatter(frames1, y_drift_bins, s=25,
+    ax.scatter(frames1, y_drift_bins, s=10, alpha=0.2,
                 facecolors='none', edgecolors='b')
     ax.plot(frames2, x_drift, 'r', label='x-axis drift')
     ax.plot(frames2, y_drift, 'b', label='y-axis drift')
@@ -478,17 +478,21 @@ def calculate_mean_sd(all_paths, pixel_res):
         values = np.genfromtxt(all_paths[i], dtype=float,
                       skip_header=1, delimiter= ',')
 
-        mean_x = np.nanmean(values[:, 1]) * pixel_res
+        bins, lines = values[:, 0:4], values[:, 4:8]
 
-        std_x = np.nanstd(values[:, 1]) * pixel_res
+        bins_cor, lines_cor = zero_initials(bins, lines)
 
-        max_x = np.nanmax(np.abs(values[:, 1])) * pixel_res
+        mean_x = np.nanmean(np.abs(bins_cor[:, 1])) * pixel_res
 
-        mean_y = np.nanmean(values[:, 3]) * pixel_res
+        std_x = np.nanstd(np.abs(bins_cor[:, 1])) * pixel_res
 
-        std_y = np.nanstd(values[:, 3]) * pixel_res
+        max_x = np.nanmax(np.abs(bins_cor[:, 1])) * pixel_res
 
-        max_y = np.nanmax(np.abs(values[:, 3])) * pixel_res
+        mean_y = np.nanmean(np.abs(bins_cor[:, 3])) * pixel_res
+
+        std_y = np.nanstd(np.abs(bins_cor[:, 3])) * pixel_res
+
+        max_y = np.nanmax(np.abs(bins_cor[:, 3])) * pixel_res
 
         mean_std_max_data[i, 0], mean_std_max_data[i, 1], mean_std_max_data[i, 2] = mean_x, std_x, max_x
 
@@ -516,7 +520,7 @@ def overall_meansd(out):
 
     df = pd.read_csv(full_path, sep='\t')
 
-    means = df[df.columns[1]].abs()
+    means = df[df.columns[1]]
 
     sds = df[df.columns[2]]
 
@@ -544,7 +548,7 @@ def overall_meansd(out):
         f.write('Mean maxima along y: ' + str(mean_max_y) + 'nm \n')
 
 
-def plot_stripplot(out):
+def plot_boxplot(out):
 
     plt.ioff()
 
@@ -556,7 +560,7 @@ def plot_stripplot(out):
 
     df = pd.read_csv(full_path, sep='\t')
 
-    means = df[df.columns[1]].abs()
+    means = df[df.columns[1]]
 
     mean_x = np.mean(means[0: int(len(means) / 2)])
 
@@ -566,6 +570,12 @@ def plot_stripplot(out):
 
     sns.set_theme(font='sans-serif')
 
+    #graph = sns.boxplot(data=df, x=df.columns[0], y=df.columns[1],
+                        #linewidth=1.5, showmeans=True, meanline=True,
+                        #meanprops={'linestyle' : 'dashed',
+                         #           'linewidth' : 2.5},
+                        #boxprops={'facecolor' : 'none',
+                         #         'edgecolor' : 'black'})
     graph = sns.stripplot(x=df.columns[0], y=means, data=df,
                           s=12, color='#00008b')
     graph.axhline(mean_x, xmin=0.1, xmax=0.4, linewidth=3.5)
@@ -602,9 +612,9 @@ def plot_stripplot(out):
     ax.set_xlabel('Axis', labelpad=12, fontsize=28)
     ax.set_ylabel(df.columns[1], labelpad=12, fontsize=28)
 
-    plt.savefig(out + '/all_beads.png')
+    plt.savefig(out + '/dotplot_beads.png')
 
-def plot_max_stripplot(out):
+def plot_max_boxplot(out):
 
     plt.ioff()
 
@@ -634,7 +644,12 @@ def plot_max_stripplot(out):
     fig.patch.set_facecolor('white')
     ax.set_facecolor('white')
 
-    #graph = sns.boxplot(data=df, x=df.columns[0], y=df.columns[3])
+    #graph = sns.boxplot(data=df, x=df.columns[0], y=df.columns[1],
+     #                   linewidth=1.5, showmeans=True, meanline=True,
+      #                  meanprops={'linestyle' : 'dashed',
+       #                             'linewidth' : 2.5},
+        #                boxprops={'facecolor' : 'none',
+         #                         'edgecolor' : 'black'})
     graph = sns.stripplot(x=df.columns[0], y=maxima, data=df,
                           s=12, color='#00008b')
     graph.axhline(maxima_x, xmin=0.1, xmax=0.4, linewidth=3.5)
@@ -671,5 +686,5 @@ def plot_max_stripplot(out):
     ax.set_xlabel('Axis', labelpad=12, fontsize=28)
     ax.set_ylabel(df.columns[3], labelpad=12, fontsize=28)
 
-    plt.savefig(out + '/all_beads_maxima.png')
+    plt.savefig(out + '/dotplot_beads_maxima.png')
     plt.close(fig)
