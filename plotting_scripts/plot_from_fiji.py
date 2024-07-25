@@ -4,7 +4,7 @@ from drift_quant.plotting_scripts import plot_drift
 
 pixel_size = 1
 
-timestep = 100
+timestep = 30
 
 ## Load data
 

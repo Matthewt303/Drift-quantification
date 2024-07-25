@@ -118,16 +118,16 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
 
     fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
-    ax.scatter(frames1, x_drift_bins, s=10, alpha=0.2,
+    ax.scatter(frames1, x_drift_bins, s=10, alpha=0.04,
                 facecolors='none', edgecolors='r')
-    ax.scatter(frames1, y_drift_bins, s=10, alpha=0.2,
+    ax.scatter(frames1, y_drift_bins, s=10, alpha=0.04,
                 facecolors='none', edgecolors='b')
     ax.plot(frames2, x_drift, 'r', label='x-axis drift')
     ax.plot(frames2, y_drift, 'b', label='y-axis drift')
 
     ax.legend(loc='upper left', fontsize=16)
 
-    ax.set_xlim(left=0)
+    ax.set_xlim(left=0, right=np.max(frames1) + 0.01*np.max(frames1))
 
     ratio = 1.0
 
@@ -267,8 +267,8 @@ def mean_and_std(bin_data, pixel_size, title, out):
     mean_x = np.nanmean(np.abs(x))
     mean_y = np.nanmean(np.abs(y))
 
-    std_x = np.nanstd(x)
-    std_y = np.nanstd(y)
+    std_x = np.nanstd(np.abs(x))
+    std_y = np.nanstd(np.abs(y))
 
     with open(out + '/' + str(title) + 'mean_and_std.txt', 'w') as f:
         f.write('The mean drift along x is: ' + str(mean_x) + 'nm' + '\n')
@@ -328,7 +328,7 @@ def plot_locprec(loc_data, out):
     ax.spines['left'].set_linewidth(1.0)
 
     ax.set_xlabel('Localisation Precision (nm)', labelpad=6, fontsize=28)
-    ax.set_ylabel('Number', labelpad=6, fontsize=28)
+    ax.set_ylabel('Counts', labelpad=6, fontsize=28)
 
     plt.savefig(out + '/roi_loc_prec_hist.png')
 
@@ -406,8 +406,8 @@ def plot_frc_curve(frc_data, rcc_data, x1, y1, x2, y2, title, out):
     fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
     ax.plot(spatial_freq, frc, 'C3', label='Without RCC', linewidth=3.5)
-    ax.plot(spatial_freq, thold, 'C0', label='Threshold', linewidth=3.5)
-    ax.plot(spatial_freq_rcc, frc_rcc, 'C1', label='With RCC', linewidth=3.5)
+    ax.plot(spatial_freq, thold, 'b', label='Threshold', linewidth=3.5)
+    ax.plot(spatial_freq_rcc, frc_rcc, 'C0', label='With RCC', linewidth=3.5)
     ax.plot(x1, thold[0], 'C4', marker='.', markersize=18, markeredgecolor='k')
     ax.plot(x2, thold[0], 'C4', marker='.', markersize=18, markeredgecolor='k')
 
