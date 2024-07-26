@@ -118,16 +118,16 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
 
     fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
-    ax.scatter(frames1, x_drift_bins, s=10, alpha=0.04,
+    ax.scatter(frames1, x_drift_bins, s=10, alpha=1.0,
                 facecolors='none', edgecolors='r')
-    ax.scatter(frames1, y_drift_bins, s=10, alpha=0.04,
+    ax.scatter(frames1, y_drift_bins, s=10, alpha=1.0,
                 facecolors='none', edgecolors='b')
     ax.plot(frames2, x_drift, 'r', label='x-axis drift')
     ax.plot(frames2, y_drift, 'b', label='y-axis drift')
 
     ax.legend(loc='upper left', fontsize=16)
 
-    ax.set_xlim(left=0, right=np.max(frames1) + 0.01*np.max(frames1))
+    ax.set_xlim(left=0, right=1380)
 
     ratio = 1.0
 
@@ -174,9 +174,9 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
     mpl.rcParams['font.family'] = 'sans-serif'
     mpl.rcParams['font.size'] = 20
 
-    fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
+    fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
 
-    plt.hist(x, bins=20, weights=weights, edgecolor='black', linewidth=1.1, color='C3')
+    plt.hist(x, bins=6, weights=weights, edgecolor='black', linewidth=1.1, color='C3')
 
     ratio = 1.0
 
@@ -223,9 +223,9 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
     mpl.rcParams['font.family'] = 'sans-serif'
     mpl.rcParams['font.size'] = 20
 
-    fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
+    fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
 
-    plt.hist(y, bins=20, weights=weights, edgecolor='black', linewidth=1.1, color='C3')
+    plt.hist(y, bins=6, weights=weights, edgecolor='black', linewidth=1.1, color='C3')
 
     ratio = 1.0
 
@@ -644,7 +644,7 @@ def plot_max_boxplot(out):
     fig.patch.set_facecolor('white')
     ax.set_facecolor('white')
 
-    #graph = sns.boxplot(data=df, x=df.columns[0], y=df.columns[1],
+    #graph = sns.boxplot(data=df, x=df.columns[0], y],
      #                   linewidth=1.5, showmeans=True, meanline=True,
       #                  meanprops={'linestyle' : 'dashed',
        #                             'linewidth' : 2.5},
