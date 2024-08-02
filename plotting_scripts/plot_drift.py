@@ -205,7 +205,7 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
     ax.spines['left'].set_linewidth(1.0)
 
     ax.set_xlabel('Drift along x-axis (nm)', labelpad=12, fontsize=28)
-    ax.set_ylabel('Frequency', labelpad=12, fontsize=28)
+    ax.set_ylabel('Normalised frequency', labelpad=12, fontsize=28)
 
     plt.savefig(out + '/' + str(title) + 'x_hist.png')
 
@@ -254,7 +254,7 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
     ax.spines['left'].set_linewidth(1.0)
 
     ax.set_xlabel('Drift along y-axis (nm)', labelpad=12, fontsize=28)
-    ax.set_ylabel('Frequency', labelpad=12, fontsize=28)
+    ax.set_ylabel('Normalised frequency', labelpad=12, fontsize=28)
 
     plt.savefig(out + '/' + str(title) + 'y_hist.png')
 
@@ -560,11 +560,15 @@ def plot_boxplot(out):
 
     df = pd.read_csv(full_path, sep='\t')
 
-    means = df[df.columns[1]]
+    means, stds = df[df.columns[1]], df[df.columns[2]]
 
     mean_x = np.mean(means[0: int(len(means) / 2)])
 
     mean_y = np.mean(means[int(len(means) / 2): len(means)])
+
+    mean_std_x = np.mean(stds[0: int(len(means) / 2)])
+
+    mean_std_y = np.mean(stds[int(len(stds) / 2 ): len(stds)])
 
     fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
@@ -644,7 +648,7 @@ def plot_max_boxplot(out):
     fig.patch.set_facecolor('white')
     ax.set_facecolor('white')
 
-    #graph = sns.boxplot(data=df, x=df.columns[0], y],
+    #graph = sns.boxplot(data=df, x=df.columns[0], ycd .],
      #                   linewidth=1.5, showmeans=True, meanline=True,
       #                  meanprops={'linestyle' : 'dashed',
        #                             'linewidth' : 2.5},
