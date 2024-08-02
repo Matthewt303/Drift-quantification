@@ -582,8 +582,10 @@ def plot_boxplot(out):
                          #         'edgecolor' : 'black'})
     graph = sns.stripplot(x=df.columns[0], y=means, data=df,
                           s=12, color='#00008b')
-    graph.axhline(mean_x, xmin=0.1, xmax=0.4, linewidth=3.5)
-    graph.axhline(mean_y, xmin=0.6, xmax=0.9, linewidth=3.5)
+    #graph.axhline(mean_x, xmin=0.1, xmax=0.4, linewidth=3.5)
+    #graph.axhline(mean_y, xmin=0.6, xmax=0.9, linewidth=3.5)
+    sns.pointplot(data=df, x=df.columns[0], y=means, errorbar='sd',
+                  linestyles='none')
     graph.tick_params(labelsize=20, pad=10)
 
     ax.set_ylim(bottom=0)
