@@ -548,7 +548,7 @@ def overall_meansd(out):
         f.write('Mean maxima along y: ' + str(mean_max_y) + 'nm \n')
 
 
-def plot_boxplot(out):
+def plot_dotplot(out):
 
     plt.ioff()
 
@@ -560,35 +560,15 @@ def plot_boxplot(out):
 
     df = pd.read_csv(full_path, sep='\t')
 
-    means, stds = df[df.columns[1]], df[df.columns[2]]
-
-    mean_x = np.mean(means[0: int(len(means) / 2)])
-
-    mean_y = np.mean(means[int(len(means) / 2): len(means)])
-
-    mean_std_x = np.mean(stds[0: int(len(means) / 2)])
-
-    mean_std_y = np.mean(stds[int(len(stds) / 2 ): len(stds)])
-
     fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
     sns.set_theme(font='sans-serif')
 
-    #graph = sns.boxplot(data=df, x=df.columns[0], y=df.columns[1],
-                        #linewidth=1.5, showmeans=True, meanline=True,
-                        #meanprops={'linestyle' : 'dashed',
-                         #           'linewidth' : 2.5},
-                        #boxprops={'facecolor' : 'none',
-                         #         'edgecolor' : 'black'})
-    graph = sns.stripplot(x=df.columns[0], y=means, data=df,
+    graph = sns.stripplot(x=df.columns[0], y=df[df.columns[1]], data=df,
                           s=12, color='#00008b')
-    #graph.axhline(mean_x, xmin=0.1, xmax=0.4, linewidth=3.5)
-    #graph.axhline(mean_y, xmin=0.6, xmax=0.9, linewidth=3.5)
-    sns.pointplot(data=df, x=df.columns[0], y=means, errorbar='sd',
-                  linestyles='none')
+    sns.pointplot(data=df, x=df.columns[0], y=df[df.columns[1]], errorbar='sd',
+                  markers='_', linestyles='none', scale=2.0, color='C2')
     graph.tick_params(labelsize=20, pad=10)
-
-    ax.set_ylim(bottom=0)
 
     ratio = 1.0
 
@@ -620,7 +600,7 @@ def plot_boxplot(out):
 
     plt.savefig(out + '/dotplot_beads.png')
 
-def plot_max_boxplot(out):
+def plot_max_dotplot(out):
 
     plt.ioff()
 
@@ -631,12 +611,6 @@ def plot_max_boxplot(out):
         raise OSError('Bead drift data not found in specified folder.')
 
     df = pd.read_csv(full_path, sep='\t')
-
-    maxima = df[df.columns[3]]
-
-    maxima_x = np.mean(maxima[0: int(len(maxima) / 2)])
-
-    maxima_y = np.mean(maxima[int(len(maxima) / 2): len(maxima)])
 
     plt.rcParams['xtick.bottom'] = True
     plt.rcParams['ytick.left'] = True
@@ -650,16 +624,10 @@ def plot_max_boxplot(out):
     fig.patch.set_facecolor('white')
     ax.set_facecolor('white')
 
-    #graph = sns.boxplot(data=df, x=df.columns[0], ycd .],
-     #                   linewidth=1.5, showmeans=True, meanline=True,
-      #                  meanprops={'linestyle' : 'dashed',
-       #                             'linewidth' : 2.5},
-        #                boxprops={'facecolor' : 'none',
-         #                         'edgecolor' : 'black'})
-    graph = sns.stripplot(x=df.columns[0], y=maxima, data=df,
+    graph = sns.stripplot(x=df.columns[0], y=df[df.columns[3]], data=df,
                           s=12, color='#00008b')
-    graph.axhline(maxima_x, xmin=0.1, xmax=0.4, linewidth=3.5)
-    graph.axhline(maxima_y, xmin=0.6, xmax=0.9, linewidth=3.5)
+    sns.pointplot(data=df, x=df.columns[0], y=df[df.columns[3]], errorbar='sd',
+                  markers='_', linestyles='none', scale=2.0, color='C2')
     graph.tick_params(labelsize=20, pad=10)
 
     ax.set_ylim(bottom=0)
