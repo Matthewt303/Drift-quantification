@@ -10,6 +10,34 @@ import os
 import math
 import seaborn as sns
 
+## Function to take user input
+
+def load_user_input():
+
+    counter = 0
+
+    input_path = ''
+
+    while True:
+
+        if counter == 3:
+
+            raise SystemError('Too many incorrect file paths. Exiting')
+
+        input_path = input('Please enter file/folder path or title: ')
+
+        if len(input_path) > 0:
+
+            break
+
+        else:
+
+            counter += 1
+
+            print('Invalid path entered. You have 3 -' + str(counter) + 'attempts remaining')
+
+    return input_path
+
 ## Functions for Fiji drift plots
 
 def load_plot_data(path):
@@ -280,6 +308,8 @@ def mean_and_std(bin_data, pixel_size, title, out):
 
 def load_roi_locs(path):
 
+    """" Function is probably redundant """
+
     roi_data = np.genfromtxt(path, dtype=float,
                            skip_header=1, delimiter=',')
 
@@ -459,9 +489,7 @@ def extract_files(folder_path):
 
         if plot_file[0:4] == 'fidu':
 
-            plot_path = os.path.join(folder_path, plot_file)
-
-            all_plot_paths.append(plot_path)
+            all_plot_paths.append(os.path.join(folder_path, plot_file))
 
     return all_plot_paths
 
@@ -475,12 +503,10 @@ def calculate_mean_sd(all_paths, pixel_res):
 
     for i in range(0, z):
 
-        values = np.genfromtxt(all_paths[i], dtype=float,
-                      skip_header=1, delimiter= ',')
+        values = load_plot_data(all_paths[i])
 
-        bins, lines = values[:, 0:4], values[:, 4:8]
-
-        bins_cor, lines_cor = zero_initials(bins, lines)
+        bins_cor, lines_cor = zero_initials(extract_bins(values),
+                                            extract_cont_data(values))
 
         mean_x = np.nanmean(np.abs(bins_cor[:, 1])) * pixel_res
 
@@ -567,7 +593,8 @@ def plot_dotplot(out):
     graph = sns.stripplot(x=df.columns[0], y=df[df.columns[1]], data=df,
                           s=12, color='#00008b')
     sns.pointplot(data=df, x=df.columns[0], y=df[df.columns[1]], errorbar='sd',
-                  markers='_', linestyles='none', scale=2.0, color='C2')
+                  markers='_', linestyles='none', capsize=0.1,
+                  scale=2.0, color='C2')
     graph.tick_params(labelsize=20, pad=10)
 
     ratio = 1.0
@@ -627,7 +654,8 @@ def plot_max_dotplot(out):
     graph = sns.stripplot(x=df.columns[0], y=df[df.columns[3]], data=df,
                           s=12, color='#00008b')
     sns.pointplot(data=df, x=df.columns[0], y=df[df.columns[3]], errorbar='sd',
-                  markers='_', linestyles='none', scale=2.0, color='C2')
+                  markers='_', linestyles='none', capsize=0.1,
+                  scale=2.0, color='C2')
     graph.tick_params(labelsize=20, pad=10)
 
     ax.set_ylim(bottom=0)
@@ -662,3 +690,83 @@ def plot_max_dotplot(out):
 
     plt.savefig(out + '/dotplot_beads_maxima.png')
     plt.close(fig)
+
+## Combined functions
+
+def plot_from_fiji():
+
+    pixel_size, exp_time = 1, 30
+
+    print('First enter input file.')
+    input_file = load_user_input()
+
+    print('Then enter output folder.')
+    output_folder = load_user_input()
+
+    print('Finally enter title.')
+    title = load_user_input()
+
+    data = load_plot_data(input_file)
+
+    bins = extract_bins(data)
+
+    lines = extract_cont_data(data)
+
+    bins_cor, lines_cor = zero_initials(bins, lines)
+
+    plot_all_data(bins_cor, lines_cor, pixel_size, exp_time, title, output_folder)
+
+    plot_x_histogram(bins_cor, pixel_size, title, output_folder)
+
+    plot_drift.plot_y_histogram(bins_cor, pixel_size, title, output_folder)
+
+    plot_drift.mean_and_std(bins_cor, pixel_size, title, output_folder)
+
+def analyse_all_beads():
+
+    pixel_size = 1
+
+    print('First enter folder where all plots are stored.')
+    input_folder = load_user_input()
+
+    print('Enter output folder.')
+    output_folder = load_user_input()
+
+    all_plots = extract_files(input_folder)
+
+    all_drift_stats = calculate_mean_sd(all_plots, pixel_size)
+
+    save_mean_sd(all_drift_stats, output_folder)
+
+    overall_meansd(output_folder)
+
+    plot_dotplot(output_folder)
+
+    plot_max_dotplot(output_folder)
+
+def plot_from_mat_file():
+
+    pixel_size, exp_time = 1, 0.03
+
+    print('First enter input file.')
+    input_file = load_user_input()
+
+    print('Then enter output folder.')
+    output_folder = load_user_input()
+
+    print('Finally enter title.')
+    title = load_user_input()
+
+    data = load_mat_data(input_file)
+
+    bins = extract_mat_bins(data)
+
+    lines = extract_mat_cont_data(data)
+
+    plot_all_data(bins, lines, pixel_size, exp_time, title, output_folder)
+
+    plot_x_histogram(bins, pixel_size, title, output_folder)
+
+    plot_drift.plot_y_histogram(bins, pixel_size, title, output_folder)
+
+    plot_drift.mean_and_std(bins, pixel_size, title, output_folder)

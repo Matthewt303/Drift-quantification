@@ -2,7 +2,7 @@ from drift_quant.plotting_scripts import plot_drift
 
 path = input('Please enter path to FRC plot data without rcc: ')
 
-path2 = input('Please enter path to FRC plot data with rcc: ')
+path2 = input('Please enter path to FRC plot data with rcc:eex ')
 
 out = input('Please enter folder where you want plot to be saved: ')
 
