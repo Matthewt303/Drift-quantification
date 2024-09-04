@@ -658,8 +658,6 @@ def plot_max_dotplot(out):
                   scale=2.0, color='C2')
     graph.tick_params(labelsize=20, pad=10)
 
-    ax.set_ylim(bottom=0)
-
     ratio = 1.0
 
     x_left, x_right = ax.get_xlim()
