@@ -718,9 +718,9 @@ def plot_from_fiji():
 
     plot_x_histogram(bins_cor, pixel_size, title, output_folder)
 
-    plot_drift.plot_y_histogram(bins_cor, pixel_size, title, output_folder)
+    plot_y_histogram(bins_cor, pixel_size, title, output_folder)
 
-    plot_drift.mean_and_std(bins_cor, pixel_size, title, output_folder)
+    mean_and_std(bins_cor, pixel_size, title, output_folder)
 
 def analyse_all_beads():
 
@@ -767,6 +767,10 @@ def plot_from_mat_file():
 
     plot_x_histogram(bins, pixel_size, title, output_folder)
 
-    plot_drift.plot_y_histogram(bins, pixel_size, title, output_folder)
+    plot_y_histogram(bins, pixel_size, title, output_folder)
 
-    plot_drift.mean_and_std(bins, pixel_size, title, output_folder)
+    mean_and_std(bins, pixel_size, title, output_folder)
+
+def load_frc_data():
+
+    pass
