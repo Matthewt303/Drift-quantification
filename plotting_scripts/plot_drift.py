@@ -121,9 +121,72 @@ def extract_mat_cont_data(mat_data):
 def save_mat_bins(mat_bins, num, out):
 
     np.savetxt(out + 'plot_values' + str(num) + '.csv',
-               xy_data, fmt='%.5e', delimiter=',')
+               mat_bins, fmt='%.5e', delimiter=',')
 
 ## Plots for both
+
+def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
+
+    plt.ioff()
+
+    frames1 = bin_data[:, 0] * exp_time
+
+    x_drift_bins = bin_data[:, 1] * pixel_size
+
+    y_drift_bins = bin_data[:, 3] * pixel_size
+
+    frames2 = line_data[:, 0] * exp_time
+
+    x_drift = line_data[:, 1] * pixel_size
+
+    y_drift = line_data[:, 3] * pixel_size
+
+    mpl.rcParams['font.family'] = 'sans-serif'
+    mpl.rcParams['font.size'] = 20
+
+    fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
+
+    ax.scatter(frames1, x_drift_bins, s=10, alpha=1.0,
+                facecolors='none', edgecolors='r')
+    ax.scatter(frames1, y_drift_bins, s=10, alpha=1.0,
+                facecolors='none', edgecolors='b')
+    ax.plot(frames2, x_drift, 'r', label='x-axis drift')
+    ax.plot(frames2, y_drift, 'b', label='y-axis drift')
+
+    ax.legend(loc='upper left', fontsize=16)
+
+    ax.set_xlim(left=0, right=1380)
+
+    ratio = 1.0
+
+    x_left, x_right = ax.get_xlim()
+    y_low, y_high = ax.get_ylim()
+    ax.set_aspect(abs((x_right-x_left)/(y_low-y_high)) * ratio)
+
+    ax.tick_params(axis='y', which='major', length=6, direction='in')
+    ax.tick_params(axis='y', which='minor', length=3, direction='in')
+    ax.tick_params(axis='x', which='major', length=6, direction='in')
+    ax.tick_params(axis='x', which='minor', length=3, direction='in')
+
+    ax.xaxis.set_minor_locator(AutoMinorLocator(10))
+    ax.yaxis.set_minor_locator(AutoMinorLocator(10))
+
+    ax.xaxis.label.set_color('black')
+    ax.yaxis.label.set_color('black')
+
+    ax.spines['bottom'].set_color('black')
+    ax.spines['top'].set_color('black')
+    ax.spines['right'].set_color('black')
+    ax.spines['left'].set_color('black')
+    ax.spines['bottom'].set_linewidth(1.0)
+    ax.spines['top'].set_linewidth(1.0)
+    ax.spines['right'].set_linewidth(1.0)
+    ax.spines['left'].set_linewidth(1.0)
+
+    ax.set_xlabel('Time (s)', labelpad=6, fontsize=28)
+    ax.set_ylabel('Drift (nm)', labelpad=6, fontsize=28)
+
+    plt.savefig(out + '/' + str(title) + '.png')
 
 def plot_x_histogram(bin_data, pixel_size, title, out):
 
