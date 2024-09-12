@@ -704,7 +704,7 @@ def filter_frame(folder, frame):
 
             filtered_locs = localisations[(localisations[:, 1]) < frame]
 
-            file_name = os.path.join(folder, file) + '_' + str(file_number) + '.csv'
+            file_name = folder + '/' + str(file_number) + '_' + file
 
             np.savetxt(file_name, filtered_locs, fmt='%.5e', delimiter=',')
 
