@@ -14,6 +14,16 @@ import seaborn as sns
 
 def load_user_input():
 
+    """ This function loads user input for file paths, folders, or 
+    titles for plots. It will not accept blank inputs and users will
+    have three attempts to enter a valid string before a system error
+    is raised.
+
+    Inputs: none
+    Outputs: The user input (str)
+    
+    """
+
     counter = 0
 
     input_path = ''
@@ -41,6 +51,14 @@ def load_user_input():
 ## Functions for Fiji drift plots
 
 def load_data(path):
+
+    """
+    This function loads the content of a .csv file into a numpy array.
+    Typically used for loading drift trajectory plots exported from Fiji.
+
+    Input: .csv file path (str)
+    Output: The .csv file content (numpy array)
+    """
     
     data = np.genfromtxt(path, dtype=float,
                            skip_header=1, delimiter=',')
@@ -49,17 +67,44 @@ def load_data(path):
 
 def extract_bins(all_data):
 
+    """
+    Extracts bins (in nm) from drift trajectory plots exported from Fiji. Also
+    extracts the timepoints (in frames) corresponding to each bin. x and y
+    drift are in different columns.
+
+    Input: numpy array extracted from Fiji plot
+    Output: bins of drift trajectory (numpy array)
+    """
+
     bins = all_data[:, 0:4]
 
     return bins
 
 def extract_cont_data(all_data):
 
+    """
+    Extracts curves (in nm) from plots exported from Fiji. Also
+    extracts the timepoints (in frames). x and y drift are in different columns.
+
+    Input: numpy array extracted from Fiji plot
+    Output: curve of drift trajectory (numpy array)
+    """
+
     cont_data = all_data[:, 4:8]
 
     return cont_data
 
 def zero_initials(bin_data, line_data):
+
+    """
+    Corrects the curve such that the firsts point for x-drift and y-drift
+    are zero when t=0. Bins are shifted accordingly. Shifts are independent
+    for x-drift and y-drift. 
+
+    Inputs: bins and curves from drift trajectory (numpy array)
+    Outputs: corrected bins and curves from drift trajectory.
+
+    """
 
     bins_cor = bin_data.copy()
 
@@ -696,21 +741,25 @@ def filter_frame(folder, frame):
 
     file_number = 0
 
+    filtered_files = []
+
     for file in os.listdir(folder):
 
         if file.endswith('.csv'):
 
             localisations = load_data(os.path.join(folder, file))
 
-            filtered_locs = localisations[(localisations[:, 1]) < frame]
+            filtered_locs = localisations[(localisations[:, 0]) < frame]
 
             file_name = folder + '/' + str(file_number) + '_' + file
 
             np.savetxt(file_name, filtered_locs, fmt='%.5e', delimiter=',')
 
+            filtered_files.append(file_name)
+
             file_number += 1
-
-
+    
+    return filtered_files
 
 ## Combined functions
 
@@ -760,6 +809,28 @@ def analyse_all_beads():
     save_mean_sd(all_drift_stats, output_folder)
 
     overall_meansd(output_folder)
+
+    plot_dotplot(output_folder)
+
+    plot_max_dotplot(output_folder)
+
+def analyse_beads_frame_cutoff():
+
+    pixel_size = 1
+
+    print('First enter folder where all plots are stored.')
+    input_folder = load_user_input()
+
+    print('Enter output folder.')
+    output_folder = load_user_input()
+
+    filtered_plots = filter_frame(input_folder, frame=31)
+
+    drift_stats = calculate_mean_sd(filtered_plots, pixel_res=pixel_size)
+
+    save_mean_sd(drift_values=drift_stats, out=output_folder)
+
+    overall_meansd(out=output_folder)
 
     plot_dotplot(output_folder)
 
@@ -829,3 +900,15 @@ def plot_frc_data():
 
     plot_frc_curve(no_rcc_plot, rcc_plot, x_frc, y_frc,
                    x_frc_rcc, y_frc_rcc, title, output_folder)
+
+def plot_localisation_precision():
+
+    print('Enter path to localisation table.')
+    localisation_data_path = load_user_input()
+
+    print('Enter output folder.')
+    output_folder = load_user_input()
+
+    localisation_table = load_data(localisation_data_path)
+
+    plot_locprec(loc_data=localisation_table, out=output_folder)
