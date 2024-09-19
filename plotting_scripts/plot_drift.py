@@ -59,6 +59,11 @@ def load_data(path):
     Input: .csv file path (str)
     Output: The .csv file content (numpy array)
     """
+
+    # Check for valid path
+    if os.path.isfile(path) is False:
+
+        raise OSError('Invalid path entered or file does not exist.')
     
     data = np.genfromtxt(path, dtype=float,
                            skip_header=1, delimiter=',')
@@ -76,9 +81,7 @@ def extract_bins(all_data):
     Output: bins of drift trajectory (numpy array)
     """
 
-    bins = all_data[:, 0:4]
-
-    return bins
+    return all_data[:, 0:4]
 
 def extract_cont_data(all_data):
 
@@ -90,9 +93,7 @@ def extract_cont_data(all_data):
     Output: curve of drift trajectory (numpy array)
     """
 
-    cont_data = all_data[:, 4:8]
-
-    return cont_data
+    return all_data[:, 4:8]
 
 def zero_initials(bin_data, line_data):
 
@@ -105,6 +106,14 @@ def zero_initials(bin_data, line_data):
     Outputs: corrected bins and curves from drift trajectory.
 
     """
+
+    if bin_data.shape[1] != 4:
+
+        raise ValueError('Bins cannot have more than four columns.')
+    
+    elif line_data.shape[1] != 4:
+
+        raise ValueError('Continuous data cannot have more than four columns.')
 
     bins_cor = bin_data.copy()
 
@@ -145,6 +154,10 @@ def zero_initials(bin_data, line_data):
 
 def load_mat_data(mat_path):
 
+    if os.path.isfile(mat_path) is False:
+
+        raise OSError('Invalid path specified or file does not exist.')
+
     plot_data = scipy.io.loadmat(mat_path)
 
     return plot_data
@@ -162,6 +175,10 @@ def extract_mat_cont_data(mat_data):
                            mat_data['frames'], mat_data['y']))
 
     return cont_data
+
+def frame_filter(data, cutoff):
+
+    return data[(data[:, 0]) < cutoff]
 
 def save_mat_bins(mat_bins, num, out):
 
@@ -187,20 +204,26 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     y_drift = line_data[:, 3] * pixel_size
 
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 20
+    mpl.rcParams['font.size'] = 28
 
     fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
-    ax.scatter(frames1, x_drift_bins, s=10, alpha=1.0,
+    ax.scatter(frames1, x_drift_bins, s=80, alpha=1.0,
                 facecolors='none', edgecolors='r')
-    ax.scatter(frames1, y_drift_bins, s=10, alpha=1.0,
+    ax.scatter(frames1, y_drift_bins, s=80, alpha=1.0,
                 facecolors='none', edgecolors='b')
-    ax.plot(frames2, x_drift, 'r', label='x-axis drift')
-    ax.plot(frames2, y_drift, 'b', label='y-axis drift')
+    ax.plot(frames2, x_drift, 'r', linewidth=5.0, label='x-axis drift')
+    ax.plot(frames2, y_drift, 'b', linewidth=5.0, label='y-axis drift')
 
-    ax.legend(loc='upper left', fontsize=16)
+    leg = plt.legend(loc='upper left')
 
-    ax.set_xlim(left=0, right=1380)
+    for line in leg.get_lines():
+        line.set_linewidth(3.5)
+    
+    for text in leg.get_texts():
+        text.set_fontsize(21)
+
+    ax.set_xlim(left=0, right=np.max(frames2) + 100)
 
     ratio = 1.0
 
@@ -208,10 +231,10 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     y_low, y_high = ax.get_ylim()
     ax.set_aspect(abs((x_right-x_left)/(y_low-y_high)) * ratio)
 
-    ax.tick_params(axis='y', which='major', length=6, direction='in')
-    ax.tick_params(axis='y', which='minor', length=3, direction='in')
-    ax.tick_params(axis='x', which='major', length=6, direction='in')
-    ax.tick_params(axis='x', which='minor', length=3, direction='in')
+    ax.tick_params(axis='y', which='major', length=10, direction='in')
+    ax.tick_params(axis='y', which='minor', length=5, direction='in')
+    ax.tick_params(axis='x', which='major', length=10, direction='in')
+    ax.tick_params(axis='x', which='minor', length=5, direction='in')
 
     ax.xaxis.set_minor_locator(AutoMinorLocator(10))
     ax.yaxis.set_minor_locator(AutoMinorLocator(10))
@@ -228,8 +251,8 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Time (s)', labelpad=6, fontsize=28)
-    ax.set_ylabel('Drift (nm)', labelpad=6, fontsize=28)
+    ax.set_xlabel('Time (s)', labelpad=6, fontsize=40)
+    ax.set_ylabel('Drift (nm)', labelpad=-20, fontsize=40)
 
     plt.savefig(out + '/' + str(title) + '.png')
 
@@ -862,6 +885,34 @@ def plot_from_mat_file():
     plot_y_histogram(bins, pixel_size, title, output_folder)
 
     mean_and_std(bins, pixel_size, title, output_folder)
+
+def plot_from_mat_frame_cutoff():
+
+    pixel_size, exp_time = 1, 0.03
+
+    print('First enter input file.')
+    input_file = load_user_input()
+
+    print('Then enter output folder.')
+    output_folder = load_user_input()
+
+    print('Finally enter title.')
+    title = load_user_input()
+
+    data = load_mat_data(input_file)
+
+    bins = frame_filter(extract_mat_bins(data), cutoff=33000)
+
+    lines = frame_filter(extract_mat_cont_data(data), cutoff=33000)
+
+    plot_all_data(bins, lines, pixel_size, exp_time, title, output_folder)
+
+    plot_x_histogram(bins, pixel_size, title, output_folder)
+
+    plot_y_histogram(bins, pixel_size, title, output_folder)
+
+    mean_and_std(bins, pixel_size, title, output_folder)
+
 
 def load_frc_data():
 
