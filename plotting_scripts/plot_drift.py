@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import scipy.io
 from matplotlib.ticker import MultipleLocator, AutoMinorLocator
+from tqdm import tqdm
 import os
 import math
 import seaborn as sns
@@ -252,7 +253,7 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     ax.spines['left'].set_linewidth(1.0)
 
     ax.set_xlabel('Time (s)', labelpad=6, fontsize=40)
-    ax.set_ylabel('Drift (nm)', labelpad=-20, fontsize=40)
+    ax.set_ylabel('Drift (nm)', labelpad=2, fontsize=40)
 
     plt.savefig(out + '/' + str(title) + '.png')
 
@@ -556,9 +557,11 @@ def extract_files(folder_path):
 
     all_plot_paths = []
 
-    for plot_file in plot_files:
+    for plot_file in tqdm(plot_files):
 
         if plot_file[0:4] == 'fidu':
+
+            print('Extracting {}'.format(plot_file))
 
             all_plot_paths.append(os.path.join(folder_path, plot_file))
 
@@ -572,7 +575,9 @@ def calculate_mean_sd(all_paths, pixel_res):
 
     axes = np.empty((2 * z, 1), dtype=str)
 
-    for i in range(0, z):
+    for i in tqdm(range(0, z)):
+
+        print('Quantifying drift in file ' + str(i))
 
         values = load_data(all_paths[i])
 
@@ -665,7 +670,7 @@ def plot_dotplot(out):
                           s=12, color='#00008b')
     sns.pointplot(data=df, x=df.columns[0], y=df[df.columns[1]], errorbar='sd',
                   markers='_', linestyles='none', capsize=0.1,
-                  scale=2.0, color='C2')
+                  linewidth=5.0, color='C2')
     graph.tick_params(labelsize=20, pad=10)
 
     ratio = 1.0
@@ -726,7 +731,7 @@ def plot_max_dotplot(out):
                           s=12, color='#00008b')
     sns.pointplot(data=df, x=df.columns[0], y=df[df.columns[3]], errorbar='sd',
                   markers='_', linestyles='none', capsize=0.1,
-                  scale=2.0, color='C2')
+                  linewidth=5.0, color='C2')
     graph.tick_params(labelsize=20, pad=10)
 
     ratio = 1.0
@@ -760,21 +765,23 @@ def plot_max_dotplot(out):
     plt.savefig(out + '/dotplot_beads_maxima.png')
     plt.close(fig)
 
-def filter_frame(folder, frame):
+def filter_frame(in_folder, out_folder, frame):
 
     file_number = 0
 
     filtered_files = []
 
-    for file in os.listdir(folder):
+    for file in tqdm(os.listdir(in_folder)):
 
         if file.endswith('.csv'):
 
-            localisations = load_data(os.path.join(folder, file))
+            print('Converting {}'.format(file))
+
+            localisations = load_data(os.path.join(in_folder, file))
 
             filtered_locs = localisations[(localisations[:, 0]) < frame]
 
-            file_name = folder + '/' + str(file_number) + '_' + file
+            file_name = out_folder + '/' + str(file_number) + '_' + file
 
             np.savetxt(file_name, filtered_locs, fmt='%.5e', delimiter=',')
 
@@ -847,7 +854,7 @@ def analyse_beads_frame_cutoff():
     print('Enter output folder.')
     output_folder = load_user_input()
 
-    filtered_plots = filter_frame(input_folder, frame=31)
+    filtered_plots = filter_frame(input_folder, output_folder, frame=31)
 
     drift_stats = calculate_mean_sd(filtered_plots, pixel_res=pixel_size)
 

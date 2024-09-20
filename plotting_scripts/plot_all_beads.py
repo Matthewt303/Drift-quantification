@@ -1,5 +1,5 @@
-from drift_quant.plotting_scripts.plot_drift import analyse_all_beads
+from plot_drift import analyse_beads_frame_cutoff, analyse_all_beads
 
 if __name__ == '__main__':
 
-    analyse_all_beads()
+    analyse_beads_frame_cutoff()
