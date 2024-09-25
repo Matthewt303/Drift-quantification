@@ -209,9 +209,9 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
 
     fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
-    ax.scatter(frames1, x_drift_bins, s=80, alpha=1.0,
+    ax.scatter(frames1, x_drift_bins, s=300, alpha=1.0,
                 facecolors='none', edgecolors='r')
-    ax.scatter(frames1, y_drift_bins, s=80, alpha=1.0,
+    ax.scatter(frames1, y_drift_bins, s=300, alpha=1.0,
                 facecolors='none', edgecolors='b')
     ax.plot(frames2, x_drift, 'r', linewidth=5.0, label='x-axis drift')
     ax.plot(frames2, y_drift, 'b', linewidth=5.0, label='y-axis drift')
@@ -222,7 +222,7 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
         line.set_linewidth(3.5)
     
     for text in leg.get_texts():
-        text.set_fontsize(21)
+        text.set_fontsize(34)
 
     ax.set_xlim(left=0, right=np.max(frames2) + 100)
 
