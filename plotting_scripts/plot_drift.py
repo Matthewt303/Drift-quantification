@@ -256,6 +256,7 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     ax.set_ylabel('Drift (nm)', labelpad=2, fontsize=40)
 
     plt.savefig(out + '/' + str(title) + '.png')
+    plt.savefig(out + '/' + str(title) + '.svg')
 
 def plot_x_histogram(bin_data, pixel_size, title, out):
 
@@ -304,6 +305,7 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
     ax.set_ylabel('Normalised frequency', labelpad=12, fontsize=28)
 
     plt.savefig(out + '/' + str(title) + 'x_hist.png')
+    plt.savefig(out + '/' + str(title) + 'x_hist.svg')
 
 
 def plot_y_histogram(bin_data, pixel_size, title, out):
@@ -353,6 +355,7 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
     ax.set_ylabel('Normalised frequency', labelpad=12, fontsize=28)
 
     plt.savefig(out + '/' + str(title) + 'y_hist.png')
+    plt.savefig(out + '/' + str(title) + 'y_hist.svg')
 
 def mean_and_std(bin_data, pixel_size, title, out):
 
@@ -429,6 +432,7 @@ def plot_locprec(loc_data, out):
     ax.set_ylabel('Counts', labelpad=6, fontsize=28)
 
     plt.savefig(out + '/roi_loc_prec_hist.png')
+    plt.savefig(out + '/roi_loc_prec_hist.svg')
 
 ## Functions for FRC calculations
 
@@ -505,15 +509,21 @@ def plot_frc_curve(frc_data, rcc_data, x1, y1, x2, y2, title, out):
     mpl.rcParams['font.family'] = 'sans-serif'
     mpl.rcParams['font.size'] = 20
 
-    fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
+    fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
 
-    ax.plot(spatial_freq, frc, 'C3', label='Without RCC', linewidth=3.5)
-    ax.plot(spatial_freq, thold, 'b', label='Threshold', linewidth=3.5)
+    ax.plot(spatial_freq, frc, 'C3', label='Without RCC', linewidth=5)
+    ax.plot(spatial_freq, thold, 'b', label='Threshold', linewidth=5)
     ax.plot(spatial_freq_rcc, frc_rcc, 'C0', label='With RCC', linewidth=3.5)
     ax.plot(x1, thold[0], 'C4', marker='.', markersize=18, markeredgecolor='k')
     ax.plot(x2, thold[0], 'C4', marker='.', markersize=18, markeredgecolor='k')
 
-    ax.legend(loc='upper right', fontsize=14)
+    leg = plt.legend(loc='upper left')
+
+    for line in leg.get_lines():
+        line.set_linewidth(2.5)
+    
+    for text in leg.get_texts():
+        text.set_fontsize(24)
 
     ax.set_ylim(bottom=np.min(frc) - 0.05, top=1)
     ax.set_xlim(left=0)
@@ -544,10 +554,11 @@ def plot_frc_curve(frc_data, rcc_data, x1, y1, x2, y2, title, out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Spatial frequency (nm^-1)', labelpad=12, fontsize=28)
-    ax.set_ylabel('Fourier Ring Correlation', labelpad=12, fontsize=28)
+    ax.set_xlabel('Spatial frequency (nm^-1)', labelpad=6, fontsize=40)
+    ax.set_ylabel('Fourier Ring Correlation', labelpad=2, fontsize=40)
 
     plt.savefig(out + '/' + str(title) + 'frc_plot.png')
+    plt.savefig(out + '/' + str(title) + 'frc_plot.svg')
 
 ## Calculate mean and SD for all beads
 
@@ -702,6 +713,7 @@ def plot_dotplot(out):
     ax.set_ylabel(df.columns[1], labelpad=12, fontsize=28)
 
     plt.savefig(out + '/dotplot_beads.png')
+    plt.savefig(out + '/dotplot_beads.svg')
 
 def plot_max_dotplot(out):
 
@@ -763,6 +775,7 @@ def plot_max_dotplot(out):
     ax.set_ylabel(df.columns[3], labelpad=12, fontsize=28)
 
     plt.savefig(out + '/dotplot_beads_maxima.png')
+    plt.savefig(out + '/dotplot_beads_maxima.svg')
     plt.close(fig)
 
 def filter_frame(in_folder, out_folder, frame):
@@ -942,12 +955,16 @@ def load_frc_data():
 
 def plot_frc_data():
 
+    print('Enter non-RCC data.')
     no_rcc_data = load_user_input()
 
+    print('Enter RCC data.')
     rcc_data = load_user_input()
 
+    print('Enter title')
     title = load_user_input()
 
+    print('Enter output folder.')
     output_folder = load_user_input()
 
     no_rcc_plot, rcc_plot = load_data(no_rcc_data), load_data(rcc_data)

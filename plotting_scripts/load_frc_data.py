@@ -1,4 +1,4 @@
-from drift_quant.plotting_scripts.plot_drift import load_frc_data
+from plot_drift import load_frc_data
 
 if __name__ == '__main__':
 
