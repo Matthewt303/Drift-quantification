@@ -258,7 +258,7 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     ax.spines['left'].set_linewidth(1.0)
 
     ax.set_xlabel('Time (s)', labelpad=6, fontsize=34)
-    ax.set_ylabel('Drift (nm)', labelpad=-4, fontsize=34)
+    ax.set_ylabel('Drift (nm)', labelpad=2, fontsize=34)
 
     plt.savefig(out + '/' + str(title) + '.png')
     plt.savefig(out + '/' + str(title) + '.svg')
@@ -517,21 +517,21 @@ def plot_frc_curve(frc_data, rcc_data, x1, y1, x2, y2, title, out):
     mpl.rcParams['font.family'] = 'sans-serif'
     mpl.rcParams['font.size'] = 23
 
-    fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
+    fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    ax.plot(spatial_freq, frc, 'palevioletred', label='Without RCC', linewidth=4.5)
-    ax.plot(spatial_freq, thold, 'mediumblue', label='Threshold', linewidth=4.5)
-    ax.plot(spatial_freq_rcc, frc_rcc, 'darkred', label='With RCC', linewidth=4.5)
+    ax.plot(spatial_freq, frc, 'darkmagenta', label='Without RCC', linewidth=4.5)
+    ax.plot(spatial_freq, thold, 'royalblue', label='Threshold', linewidth=4.5)
+    ax.plot(spatial_freq_rcc, frc_rcc, 'salmon', label='With RCC', linewidth=4.5)
     ax.plot(x1, thold[0], 'blueviolet', marker='.', markersize=24, markeredgecolor='k')
     ax.plot(x2, thold[0], 'blueviolet', marker='.', markersize=24, markeredgecolor='k')
 
-    leg = plt.legend(loc='upper left')
+    leg = plt.legend(loc='upper right')
 
     for line in leg.get_lines():
-        line.set_linewidth(2.5)
+        line.set_linewidth(3)
     
     for text in leg.get_texts():
-        text.set_fontsize(24)
+        text.set_fontsize(23)
 
     ax.set_ylim(bottom=np.min(frc) - 0.05, top=1)
     ax.set_xlim(left=0)
@@ -562,7 +562,7 @@ def plot_frc_curve(frc_data, rcc_data, x1, y1, x2, y2, title, out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Spatial frequency (nm^-1)', labelpad=6, fontsize=34)
+    ax.set_xlabel(r'Spatial frequency $\mathregular{(nm^{-1})}$', labelpad=4, fontsize=34)
     ax.set_ylabel('Fourier Ring Correlation', labelpad=2, fontsize=34)
 
     plt.savefig(out + '/' + str(title) + 'frc_plot.png')
