@@ -35,7 +35,7 @@ def load_user_input():
 
             raise SystemError('Too many incorrect file paths. Exiting')
 
-        input_path = input('Please enter file/folder path or title: ')
+        input_path = input('')
 
         if len(input_path) > 0:
 
@@ -148,6 +148,10 @@ def zero_initials(bin_data, line_data):
 
         bins_cor[:, 3] += np.abs(y0)
 
+    lines_cor = lines_cor[~np.isnan(lines_cor)].reshape(-1, 4)
+
+    bines_cor = bins_cor[~np.isnan(bins_cor)].reshape(-1, 4)
+    
     return bins_cor, lines_cor
 
 
@@ -205,24 +209,24 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     y_drift = line_data[:, 3] * pixel_size
 
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 28
+    mpl.rcParams['font.size'] = 23
 
-    fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
+    fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    ax.scatter(frames1, x_drift_bins, s=300, alpha=1.0,
-                facecolors='none', edgecolors='r')
-    ax.scatter(frames1, y_drift_bins, s=300, alpha=1.0,
-                facecolors='none', edgecolors='b')
-    ax.plot(frames2, x_drift, 'r', linewidth=5.0, label='x-axis drift')
-    ax.plot(frames2, y_drift, 'b', linewidth=5.0, label='y-axis drift')
+    ax.scatter(frames1, x_drift_bins, s=25, alpha=0.025,
+                facecolors='none', edgecolors='darkred')
+    ax.scatter(frames1, y_drift_bins, s=25, alpha=0.025,
+                facecolors='none', edgecolors='mediumblue')
+    ax.plot(frames2, x_drift, 'darkred', linewidth=4.5, label='x-axis drift')
+    ax.plot(frames2, y_drift, 'mediumblue', linewidth=4.5, label='y-axis drift')
 
     leg = plt.legend(loc='upper left')
 
     for line in leg.get_lines():
-        line.set_linewidth(3.5)
+        line.set_linewidth(3.0)
     
     for text in leg.get_texts():
-        text.set_fontsize(34)
+        text.set_fontsize(23)
 
     ax.set_xlim(left=0, right=np.max(frames2) + 100)
 
@@ -252,8 +256,8 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Time (s)', labelpad=6, fontsize=40)
-    ax.set_ylabel('Drift (nm)', labelpad=2, fontsize=40)
+    ax.set_xlabel('Time (s)', labelpad=6, fontsize=34)
+    ax.set_ylabel('Drift (nm)', labelpad=-3, fontsize=34)
 
     plt.savefig(out + '/' + str(title) + '.png')
     plt.savefig(out + '/' + str(title) + '.svg')
@@ -269,11 +273,11 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
     weights = np.ones_like(x) / float(len(x))
 
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 20
+    mpl.rcParams['font.size'] = 23
 
-    fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
+    fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    plt.hist(x, bins=6, weights=weights, edgecolor='black', linewidth=1.1, color='C3')
+    plt.hist(x, bins=20, weights=weights, edgecolor='black', linewidth=1.5, color='darkred')
 
     ratio = 1.0
 
@@ -283,8 +287,8 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
 
     ax.tick_params(axis='y', which='major', length=6, direction='in')
     ax.tick_params(axis='y', which='minor', length=3, direction='in')
-    ax.tick_params(axis='x', which='major', length=6, direction='in')
-    ax.tick_params(axis='x', which='minor', length=3, direction='in')
+    ax.tick_params(axis='x', which='major', length=6, direction='out')
+    ax.tick_params(axis='x', which='minor', length=3, direction='out')
 
     #ax.xaxis.set_minor_locator(AutoMinorLocator(10))
     ax.yaxis.set_minor_locator(AutoMinorLocator(10))
@@ -301,8 +305,8 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Drift along x-axis (nm)', labelpad=12, fontsize=28)
-    ax.set_ylabel('Normalised frequency', labelpad=12, fontsize=28)
+    ax.set_xlabel('Drift along x-axis (nm)', labelpad=6, fontsize=34)
+    ax.set_ylabel('Normalised frequency', labelpad=1, fontsize=34)
 
     plt.savefig(out + '/' + str(title) + 'x_hist.png')
     plt.savefig(out + '/' + str(title) + 'x_hist.svg')
@@ -319,11 +323,11 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
     weights = np.ones_like(y) / float(len(y))
 
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 20
+    mpl.rcParams['font.size'] = 23
 
-    fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
+    fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    plt.hist(y, bins=6, weights=weights, edgecolor='black', linewidth=1.1, color='C3')
+    plt.hist(y, bins=20, weights=weights, edgecolor='black', linewidth=1.5, color='darkred')
 
     ratio = 1.0
 
@@ -333,8 +337,8 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
 
     ax.tick_params(axis='y', which='major', length=6, direction='in')
     ax.tick_params(axis='y', which='minor', length=3, direction='in')
-    ax.tick_params(axis='x', which='major', length=6, direction='in')
-    ax.tick_params(axis='x', which='minor', length=3, direction='in')
+    ax.tick_params(axis='x', which='major', length=6, direction='out')
+    ax.tick_params(axis='x', which='minor', length=3, direction='out')
 
     #ax.xaxis.set_minor_locator(AutoMinorLocator(10))
     ax.yaxis.set_minor_locator(AutoMinorLocator(10))
@@ -351,8 +355,8 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Drift along y-axis (nm)', labelpad=12, fontsize=28)
-    ax.set_ylabel('Normalised frequency', labelpad=12, fontsize=28)
+    ax.set_xlabel('Drift along y-axis (nm)', labelpad=6, fontsize=34)
+    ax.set_ylabel('Normalised frequency', labelpad=1, fontsize=34)
 
     plt.savefig(out + '/' + str(title) + 'y_hist.png')
     plt.savefig(out + '/' + str(title) + 'y_hist.svg')
@@ -673,16 +677,16 @@ def plot_dotplot(out):
 
     df = pd.read_csv(full_path, sep='\t')
 
-    fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
+    fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
     sns.set_theme(font='sans-serif')
 
     graph = sns.stripplot(x=df.columns[0], y=df[df.columns[1]], data=df,
-                          s=12, color='#00008b')
+                          s=50, color='midnightblue')
     sns.pointplot(data=df, x=df.columns[0], y=df[df.columns[1]], errorbar='sd',
-                  markers='_', linestyles='none', capsize=0.1,
-                  linewidth=5.0, color='C2')
-    graph.tick_params(labelsize=20, pad=10)
+                  markers='_', linestyles='none', capsize=0.2,
+                  linewidth=4.5, color='darkgreen')
+    graph.tick_params(labelsize=23, pad=5)
 
     ratio = 1.0
 
@@ -709,8 +713,8 @@ def plot_dotplot(out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Axis', labelpad=12, fontsize=28)
-    ax.set_ylabel(df.columns[1], labelpad=12, fontsize=28)
+    ax.set_xlabel('Axis', labelpad=12, fontsize=34)
+    ax.set_ylabel(df.columns[1], labelpad=12, fontsize=34)
 
     plt.savefig(out + '/dotplot_beads.png')
     plt.savefig(out + '/dotplot_beads.svg')
@@ -740,11 +744,11 @@ def plot_max_dotplot(out):
     ax.set_facecolor('white')
 
     graph = sns.stripplot(x=df.columns[0], y=df[df.columns[3]], data=df,
-                          s=12, color='#00008b')
+                          s=25, color='midnightblue')
     sns.pointplot(data=df, x=df.columns[0], y=df[df.columns[3]], errorbar='sd',
-                  markers='_', linestyles='none', capsize=0.1,
-                  linewidth=5.0, color='C2')
-    graph.tick_params(labelsize=20, pad=10)
+                  markers='_', linestyles='none', capsize=0.2,
+                  linewidth=4.5, color='darkgreen')
+    graph.tick_params(labelsize=23, pad=5)
 
     ratio = 1.0
 
@@ -771,8 +775,8 @@ def plot_max_dotplot(out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Axis', labelpad=12, fontsize=28)
-    ax.set_ylabel(df.columns[3], labelpad=12, fontsize=28)
+    ax.set_xlabel('Axis', labelpad=12, fontsize=34)
+    ax.set_ylabel(df.columns[3], labelpad=12, fontsize=34)
 
     plt.savefig(out + '/dotplot_beads_maxima.png')
     plt.savefig(out + '/dotplot_beads_maxima.svg')
