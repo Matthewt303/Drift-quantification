@@ -208,14 +208,15 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
 
     y_drift = line_data[:, 3] * pixel_size
 
+    mpl.rcParams['font.sans-serif'] = "Arial"
     mpl.rcParams['font.family'] = 'sans-serif'
     mpl.rcParams['font.size'] = 23
 
     fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    ax.scatter(frames1, x_drift_bins, s=25, alpha=0.025,
+    ax.scatter(frames1, x_drift_bins, s=200, alpha=1.0,
                 facecolors='none', edgecolors='darkred')
-    ax.scatter(frames1, y_drift_bins, s=25, alpha=0.025,
+    ax.scatter(frames1, y_drift_bins, s=200, alpha=1.0,
                 facecolors='none', edgecolors='mediumblue')
     ax.plot(frames2, x_drift, 'darkred', linewidth=4.5, label='x-axis drift')
     ax.plot(frames2, y_drift, 'mediumblue', linewidth=4.5, label='y-axis drift')
@@ -257,7 +258,7 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     ax.spines['left'].set_linewidth(1.0)
 
     ax.set_xlabel('Time (s)', labelpad=6, fontsize=34)
-    ax.set_ylabel('Drift (nm)', labelpad=-3, fontsize=34)
+    ax.set_ylabel('Drift (nm)', labelpad=-4, fontsize=34)
 
     plt.savefig(out + '/' + str(title) + '.png')
     plt.savefig(out + '/' + str(title) + '.svg')
@@ -272,12 +273,13 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
 
     weights = np.ones_like(x) / float(len(x))
 
+    mpl.rcParams['font.sans-serif'] = "Arial"
     mpl.rcParams['font.family'] = 'sans-serif'
     mpl.rcParams['font.size'] = 23
 
     fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    plt.hist(x, bins=20, weights=weights, edgecolor='black', linewidth=1.5, color='darkred')
+    plt.hist(x, bins=6, weights=weights, edgecolor='black', linewidth=1.5, color='darkred')
 
     ratio = 1.0
 
@@ -306,7 +308,7 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
     ax.spines['left'].set_linewidth(1.0)
 
     ax.set_xlabel('Drift along x-axis (nm)', labelpad=6, fontsize=34)
-    ax.set_ylabel('Normalised frequency', labelpad=1, fontsize=34)
+    ax.set_ylabel('Normalised frequency', labelpad=3, fontsize=34)
 
     plt.savefig(out + '/' + str(title) + 'x_hist.png')
     plt.savefig(out + '/' + str(title) + 'x_hist.svg')
@@ -322,12 +324,13 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
 
     weights = np.ones_like(y) / float(len(y))
 
+    mpl.rcParams['font.sans-serif'] = "Arial"
     mpl.rcParams['font.family'] = 'sans-serif'
     mpl.rcParams['font.size'] = 23
 
     fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    plt.hist(y, bins=20, weights=weights, edgecolor='black', linewidth=1.5, color='darkred')
+    plt.hist(y, bins=6, weights=weights, edgecolor='black', linewidth=1.5, color='darkred')
 
     ratio = 1.0
 
@@ -356,7 +359,7 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
     ax.spines['left'].set_linewidth(1.0)
 
     ax.set_xlabel('Drift along y-axis (nm)', labelpad=6, fontsize=34)
-    ax.set_ylabel('Normalised frequency', labelpad=1, fontsize=34)
+    ax.set_ylabel('Normalised frequency', labelpad=3, fontsize=34)
 
     plt.savefig(out + '/' + str(title) + 'y_hist.png')
     plt.savefig(out + '/' + str(title) + 'y_hist.svg')
@@ -398,7 +401,7 @@ def plot_locprec(loc_data, out):
 
     locprec = locprec[(locprec < 100)]
 
-    mpl.rcParams['font.family'] = 'sans-serif'
+    mpl.rcParams['font.family'] = 'Arial'
     mpl.rcParams['font.size'] = 20
 
     fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
@@ -510,16 +513,17 @@ def plot_frc_curve(frc_data, rcc_data, x1, y1, x2, y2, title, out):
 
     frc_rcc = rcc_data[:, 1]
 
+    mpl.rcParams['font.sans-serif'] = "Arial"
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 20
+    mpl.rcParams['font.size'] = 23
 
     fig, ax = plt.subplots(figsize=(10, 10), dpi=500)
 
-    ax.plot(spatial_freq, frc, 'C3', label='Without RCC', linewidth=5)
-    ax.plot(spatial_freq, thold, 'b', label='Threshold', linewidth=5)
-    ax.plot(spatial_freq_rcc, frc_rcc, 'C0', label='With RCC', linewidth=3.5)
-    ax.plot(x1, thold[0], 'C4', marker='.', markersize=18, markeredgecolor='k')
-    ax.plot(x2, thold[0], 'C4', marker='.', markersize=18, markeredgecolor='k')
+    ax.plot(spatial_freq, frc, 'palevioletred', label='Without RCC', linewidth=4.5)
+    ax.plot(spatial_freq, thold, 'mediumblue', label='Threshold', linewidth=4.5)
+    ax.plot(spatial_freq_rcc, frc_rcc, 'darkred', label='With RCC', linewidth=4.5)
+    ax.plot(x1, thold[0], 'blueviolet', marker='.', markersize=24, markeredgecolor='k')
+    ax.plot(x2, thold[0], 'blueviolet', marker='.', markersize=24, markeredgecolor='k')
 
     leg = plt.legend(loc='upper left')
 
@@ -558,8 +562,8 @@ def plot_frc_curve(frc_data, rcc_data, x1, y1, x2, y2, title, out):
     ax.spines['right'].set_linewidth(1.0)
     ax.spines['left'].set_linewidth(1.0)
 
-    ax.set_xlabel('Spatial frequency (nm^-1)', labelpad=6, fontsize=40)
-    ax.set_ylabel('Fourier Ring Correlation', labelpad=2, fontsize=40)
+    ax.set_xlabel('Spatial frequency (nm^-1)', labelpad=6, fontsize=34)
+    ax.set_ylabel('Fourier Ring Correlation', labelpad=2, fontsize=34)
 
     plt.savefig(out + '/' + str(title) + 'frc_plot.png')
     plt.savefig(out + '/' + str(title) + 'frc_plot.svg')
@@ -679,14 +683,14 @@ def plot_dotplot(out):
 
     fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    sns.set_theme(font='sans-serif')
+    sns.set_theme(font='Arial')
 
     graph = sns.stripplot(x=df.columns[0], y=df[df.columns[1]], data=df,
-                          s=50, color='midnightblue')
+                          s=15, color='midnightblue')
     sns.pointplot(data=df, x=df.columns[0], y=df[df.columns[1]], errorbar='sd',
                   markers='_', linestyles='none', capsize=0.2,
                   linewidth=4.5, color='darkgreen')
-    graph.tick_params(labelsize=23, pad=5)
+    graph.tick_params(labelsize=25, pad=5)
 
     ratio = 1.0
 
@@ -736,7 +740,7 @@ def plot_max_dotplot(out):
 
     fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
 
-    sns.set_theme(font='sans-serif')
+    sns.set_theme(font='Arial')
 
     sns.set_style('ticks')
 
@@ -744,11 +748,11 @@ def plot_max_dotplot(out):
     ax.set_facecolor('white')
 
     graph = sns.stripplot(x=df.columns[0], y=df[df.columns[3]], data=df,
-                          s=25, color='midnightblue')
+                          s=15, color='midnightblue')
     sns.pointplot(data=df, x=df.columns[0], y=df[df.columns[3]], errorbar='sd',
                   markers='_', linestyles='none', capsize=0.2,
                   linewidth=4.5, color='darkgreen')
-    graph.tick_params(labelsize=23, pad=5)
+    graph.tick_params(labelsize=25, pad=5)
 
     ratio = 1.0
 
