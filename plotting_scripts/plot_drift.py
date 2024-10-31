@@ -210,24 +210,24 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
 
     mpl.rcParams['font.sans-serif'] = "Arial"
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 23
+    mpl.rcParams['font.size'] = 28
 
     fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    ax.scatter(frames1, x_drift_bins, s=200, alpha=1.0,
+    ax.scatter(frames1, x_drift_bins, s=220, alpha=1.0,
                 facecolors='none', edgecolors='darkred')
-    ax.scatter(frames1, y_drift_bins, s=200, alpha=1.0,
+    ax.scatter(frames1, y_drift_bins, s=220, alpha=1.0,
                 facecolors='none', edgecolors='mediumblue')
     ax.plot(frames2, x_drift, 'darkred', linewidth=4.5, label='x-axis drift')
     ax.plot(frames2, y_drift, 'mediumblue', linewidth=4.5, label='y-axis drift')
 
-    leg = plt.legend(loc='upper left')
+    leg = plt.legend(bbox_to_anchor=(0.5, 1.13), loc='upper center', ncol=2)
 
     for line in leg.get_lines():
-        line.set_linewidth(3.0)
+        line.set_linewidth(3.5)
     
     for text in leg.get_texts():
-        text.set_fontsize(23)
+        text.set_fontsize(28)
 
     ax.set_xlim(left=0, right=np.max(frames2) + 100)
 
@@ -252,13 +252,13 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     ax.spines['top'].set_color('black')
     ax.spines['right'].set_color('black')
     ax.spines['left'].set_color('black')
-    ax.spines['bottom'].set_linewidth(1.0)
-    ax.spines['top'].set_linewidth(1.0)
-    ax.spines['right'].set_linewidth(1.0)
-    ax.spines['left'].set_linewidth(1.0)
+    ax.spines['bottom'].set_linewidth(2.0)
+    ax.spines['top'].set_linewidth(2.0)
+    ax.spines['right'].set_linewidth(2.0)
+    ax.spines['left'].set_linewidth(2.0)
 
-    ax.set_xlabel('Time (s)', labelpad=6, fontsize=34)
-    ax.set_ylabel('Drift (nm)', labelpad=2, fontsize=34)
+    ax.set_xlabel('Time (s)', labelpad=6, fontsize=40)
+    ax.set_ylabel('Drift (nm)', labelpad=-6, fontsize=40)
 
     plt.savefig(out + '/' + str(title) + '.png')
     plt.savefig(out + '/' + str(title) + '.svg')
@@ -275,11 +275,11 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
 
     mpl.rcParams['font.sans-serif'] = "Arial"
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 23
+    mpl.rcParams['font.size'] = 28
 
     fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    plt.hist(x, bins=6, weights=weights, edgecolor='black', linewidth=1.5, color='darkred')
+    plt.hist(x, bins=20, weights=weights, edgecolor='black', linewidth=1.5, color='darkred')
 
     ratio = 1.0
 
@@ -302,13 +302,13 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
     ax.spines['top'].set_color('black')
     ax.spines['right'].set_color('black')
     ax.spines['left'].set_color('black')
-    ax.spines['bottom'].set_linewidth(1.0)
-    ax.spines['top'].set_linewidth(1.0)
-    ax.spines['right'].set_linewidth(1.0)
-    ax.spines['left'].set_linewidth(1.0)
+    ax.spines['bottom'].set_linewidth(2.0)
+    ax.spines['top'].set_linewidth(2.0)
+    ax.spines['right'].set_linewidth(2.0)
+    ax.spines['left'].set_linewidth(2.0)
 
-    ax.set_xlabel('Drift along x-axis (nm)', labelpad=6, fontsize=34)
-    ax.set_ylabel('Normalised frequency', labelpad=3, fontsize=34)
+    ax.set_xlabel('Drift along x-axis (nm)', labelpad=6, fontsize=40)
+    ax.set_ylabel('Normalised frequency', labelpad=3, fontsize=40)
 
     plt.savefig(out + '/' + str(title) + 'x_hist.png')
     plt.savefig(out + '/' + str(title) + 'x_hist.svg')
@@ -330,7 +330,7 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
 
     fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    plt.hist(y, bins=6, weights=weights, edgecolor='black', linewidth=1.5, color='darkred')
+    plt.hist(y, bins=20, weights=weights, edgecolor='black', linewidth=1.5, color='darkred')
 
     ratio = 1.0
 
@@ -353,13 +353,13 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
     ax.spines['top'].set_color('black')
     ax.spines['right'].set_color('black')
     ax.spines['left'].set_color('black')
-    ax.spines['bottom'].set_linewidth(1.0)
-    ax.spines['top'].set_linewidth(1.0)
-    ax.spines['right'].set_linewidth(1.0)
-    ax.spines['left'].set_linewidth(1.0)
+    ax.spines['bottom'].set_linewidth(2.0)
+    ax.spines['top'].set_linewidth(2.0)
+    ax.spines['right'].set_linewidth(2.0)
+    ax.spines['left'].set_linewidth(2.0)
 
-    ax.set_xlabel('Drift along y-axis (nm)', labelpad=6, fontsize=34)
-    ax.set_ylabel('Normalised frequency', labelpad=3, fontsize=34)
+    ax.set_xlabel('Drift along y-axis (nm)', labelpad=6, fontsize=40)
+    ax.set_ylabel('Normalised frequency', labelpad=3, fontsize=40)
 
     plt.savefig(out + '/' + str(title) + 'y_hist.png')
     plt.savefig(out + '/' + str(title) + 'y_hist.svg')
@@ -515,7 +515,7 @@ def plot_frc_curve(frc_data, rcc_data, x1, y1, x2, y2, title, out):
 
     mpl.rcParams['font.sans-serif'] = "Arial"
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 23
+    mpl.rcParams['font.size'] = 28
 
     fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
@@ -528,10 +528,10 @@ def plot_frc_curve(frc_data, rcc_data, x1, y1, x2, y2, title, out):
     leg = plt.legend(loc='upper right')
 
     for line in leg.get_lines():
-        line.set_linewidth(3)
+        line.set_linewidth(3.5)
     
     for text in leg.get_texts():
-        text.set_fontsize(23)
+        text.set_fontsize(28)
 
     ax.set_ylim(bottom=np.min(frc) - 0.05, top=1)
     ax.set_xlim(left=0)
@@ -557,13 +557,13 @@ def plot_frc_curve(frc_data, rcc_data, x1, y1, x2, y2, title, out):
     ax.spines['top'].set_color('black')
     ax.spines['right'].set_color('black')
     ax.spines['left'].set_color('black')
-    ax.spines['bottom'].set_linewidth(1.0)
-    ax.spines['top'].set_linewidth(1.0)
-    ax.spines['right'].set_linewidth(1.0)
-    ax.spines['left'].set_linewidth(1.0)
+    ax.spines['bottom'].set_linewidth(2.0)
+    ax.spines['top'].set_linewidth(2.0)
+    ax.spines['right'].set_linewidth(2.0)
+    ax.spines['left'].set_linewidth(2.0)
 
-    ax.set_xlabel(r'Spatial frequency $\mathregular{(nm^{-1})}$', labelpad=4, fontsize=34)
-    ax.set_ylabel('Fourier Ring Correlation', labelpad=2, fontsize=34)
+    ax.set_xlabel(r'Spatial frequency $\mathregular{(nm^{-1})}$', labelpad=-3, fontsize=40)
+    ax.set_ylabel('Fourier Ring Correlation', labelpad=2, fontsize=40)
 
     plt.savefig(out + '/' + str(title) + 'frc_plot.png')
     plt.savefig(out + '/' + str(title) + 'frc_plot.svg')
@@ -690,7 +690,7 @@ def plot_dotplot(out):
     sns.pointplot(data=df, x=df.columns[0], y=df[df.columns[1]], errorbar='sd',
                   markers='_', linestyles='none', capsize=0.2,
                   linewidth=4.5, color='darkgreen')
-    graph.tick_params(labelsize=25, pad=5)
+    graph.tick_params(labelsize=30, pad=5)
 
     ratio = 1.0
 
@@ -712,13 +712,13 @@ def plot_dotplot(out):
     ax.spines['top'].set_color('black')
     ax.spines['right'].set_color('black')
     ax.spines['left'].set_color('black')
-    ax.spines['bottom'].set_linewidth(1.0)
-    ax.spines['top'].set_linewidth(1.0)
-    ax.spines['right'].set_linewidth(1.0)
-    ax.spines['left'].set_linewidth(1.0)
+    ax.spines['bottom'].set_linewidth(2.0)
+    ax.spines['top'].set_linewidth(2.0)
+    ax.spines['right'].set_linewidth(2.0)
+    ax.spines['left'].set_linewidth(2.0)
 
-    ax.set_xlabel('Axis', labelpad=12, fontsize=34)
-    ax.set_ylabel(df.columns[1], labelpad=12, fontsize=34)
+    ax.set_xlabel('Axis', labelpad=12, fontsize=40)
+    ax.set_ylabel(df.columns[1], labelpad=3, fontsize=40)
 
     plt.savefig(out + '/dotplot_beads.png')
     plt.savefig(out + '/dotplot_beads.svg')
@@ -752,7 +752,7 @@ def plot_max_dotplot(out):
     sns.pointplot(data=df, x=df.columns[0], y=df[df.columns[3]], errorbar='sd',
                   markers='_', linestyles='none', capsize=0.2,
                   linewidth=4.5, color='darkgreen')
-    graph.tick_params(labelsize=25, pad=5)
+    graph.tick_params(labelsize=30, pad=5)
 
     ratio = 1.0
 
@@ -774,13 +774,13 @@ def plot_max_dotplot(out):
     ax.spines['top'].set_color('black')
     ax.spines['right'].set_color('black')
     ax.spines['left'].set_color('black')
-    ax.spines['bottom'].set_linewidth(1.0)
-    ax.spines['top'].set_linewidth(1.0)
-    ax.spines['right'].set_linewidth(1.0)
-    ax.spines['left'].set_linewidth(1.0)
+    ax.spines['bottom'].set_linewidth(2.0)
+    ax.spines['top'].set_linewidth(2.0)
+    ax.spines['right'].set_linewidth(2.0)
+    ax.spines['left'].set_linewidth(2.0)
 
-    ax.set_xlabel('Axis', labelpad=12, fontsize=34)
-    ax.set_ylabel(df.columns[3], labelpad=12, fontsize=34)
+    ax.set_xlabel('Axis', labelpad=12, fontsize=40)
+    ax.set_ylabel(df.columns[3], labelpad=3, fontsize=40)
 
     plt.savefig(out + '/dotplot_beads_maxima.png')
     plt.savefig(out + '/dotplot_beads_maxima.svg')
