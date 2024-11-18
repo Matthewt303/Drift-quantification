@@ -326,7 +326,7 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
 
     mpl.rcParams['font.sans-serif'] = "Arial"
     mpl.rcParams['font.family'] = 'sans-serif'
-    mpl.rcParams['font.size'] = 23
+    mpl.rcParams['font.size'] = 28
 
     fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
