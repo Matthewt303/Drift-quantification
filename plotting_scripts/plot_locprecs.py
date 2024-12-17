@@ -1,13 +1,5 @@
-from drift_quant.plotting_scripts import plot_drift
+from plot_drift import plot_localisation_precision
 
-## Load Data
+if __name__ == "__main__":
 
-loc_path = input('Please enter path to localisations: ')
-
-out = input('Please enter path for saving plots: ')
-
-roi_data = plot_drift.load_roi_locs(loc_path)
-
-## Plot
-
-plot_drift.plot_locprec(roi_data, out)
+    plot_localisation_precision()

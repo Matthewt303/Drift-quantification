@@ -308,7 +308,7 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
     ax.spines['left'].set_linewidth(2.0)
 
     ax.set_xlabel('Drift along x-axis (nm)', labelpad=6, fontsize=40)
-    ax.set_ylabel('Normalised frequency', labelpad=3, fontsize=40)
+    ax.set_ylabel('Normalized frequency', labelpad=3, fontsize=40)
 
     plt.savefig(out + '/' + str(title) + 'x_hist.png')
     plt.savefig(out + '/' + str(title) + 'x_hist.svg')
@@ -359,7 +359,7 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
     ax.spines['left'].set_linewidth(2.0)
 
     ax.set_xlabel('Drift along y-axis (nm)', labelpad=6, fontsize=40)
-    ax.set_ylabel('Normalised frequency', labelpad=3, fontsize=40)
+    ax.set_ylabel('Normalized frequency', labelpad=3, fontsize=40)
 
     plt.savefig(out + '/' + str(title) + 'y_hist.png')
     plt.savefig(out + '/' + str(title) + 'y_hist.svg')
@@ -401,16 +401,20 @@ def plot_locprec(loc_data, out):
 
     locprec = locprec[(locprec < 100)]
 
-    mpl.rcParams['font.family'] = 'Arial'
-    mpl.rcParams['font.size'] = 20
+    weights = np.ones_like(locprec) / float(len(locprec))
 
-    fig, ax = plt.subplots(figsize=(12, 12), dpi=500)
+    mpl.rcParams['font.sans-serif'] = "Arial"
+    mpl.rcParams['font.family'] = 'sans-serif'
+    mpl.rcParams['font.size'] = 28
 
-    ax.hist(locprec, bins=50, edgecolor='black', linewidth=1.1, color='C3')
+    fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
+
+
+    ax.hist(locprec, bins=20, weights=weights, edgecolor='black', linewidth=1.5, color='darkred')
 
     ratio = 1.0
 
-    ax.set_xlim(left=0, right=50)
+    ax.set_xlim(left=0, right=20)
 
     x_left, x_right = ax.get_xlim()
     y_low, y_high = ax.get_ylim()
@@ -430,16 +434,16 @@ def plot_locprec(loc_data, out):
     ax.spines['top'].set_color('black')
     ax.spines['right'].set_color('black')
     ax.spines['left'].set_color('black')
-    ax.spines['bottom'].set_linewidth(1.0)
-    ax.spines['top'].set_linewidth(1.0)
-    ax.spines['right'].set_linewidth(1.0)
-    ax.spines['left'].set_linewidth(1.0)
+    ax.spines['bottom'].set_linewidth(2.0)
+    ax.spines['top'].set_linewidth(2.0)
+    ax.spines['right'].set_linewidth(2.0)
+    ax.spines['left'].set_linewidth(2.0)
 
-    ax.set_xlabel('Localisation Precision (nm)', labelpad=6, fontsize=28)
-    ax.set_ylabel('Counts', labelpad=6, fontsize=28)
+    ax.set_xlabel('Localization precision (nm)', labelpad=6, fontsize=40)
+    ax.set_ylabel('Normalized frequency', labelpad=1, fontsize=40)
 
-    plt.savefig(out + '/roi_loc_prec_hist.png')
-    plt.savefig(out + '/roi_loc_prec_hist.svg')
+    plt.savefig(out + '/loc_prec_hist.png')
+    plt.savefig(out + '/loc_prec_hist.svg')
 
 ## Functions for FRC calculations
 
@@ -816,7 +820,7 @@ def filter_frame(in_folder, out_folder, frame):
 
 def plot_from_fiji():
 
-    pixel_size, exp_time = 1, 30
+    pixel_size, exp_time = 1, 100
 
     print('First enter input file.')
     input_file = load_user_input()
