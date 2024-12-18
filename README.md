@@ -24,7 +24,18 @@ The remainder of the scripts are used to plot drift trajectories, convert locali
 FRC (Fourier ring correlation) analysis, plot FRC data, plot localization precision, and plot dotplots for the 
 experimental repeats of fluorescent bead drift.
 
-# Repository structure
-There are several scripts within the repository:
-- 1
-- 2
+# Installation
+Please feel free to download or clone the repository to use the code.
+
+# Usage
+It is highly recommended to use a virtual environment and to use conda or pip to install the necessary packages. 
+The scripts require the following packages:
+- Numpy 2.1.1
+- Pandas 2.2.2
+- Matplotlib 3.9.2
+- Scipy 1.14.1
+- tqdm 4.66.5
+- Seaborn 0.13.2
+
+# Contact
+Please contact matthew.tang@stfc.ac.uk or matthew.tang@linacre.ox.ac.uk for any questions.
