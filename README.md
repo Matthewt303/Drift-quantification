@@ -11,8 +11,20 @@ scripts to quantify and plot drift following redundant cross-correlation of loca
 that these scripts are purely for quantifying lateral drift. There are no methods to analyse axial drift in this 
 repository.
 
-There are also scripts to plot the FRC resolution and localisation precision.
-
 # Drift quantification
 The drift of fluorescent beads was calculated by applying a built-in algorithm in ThunderSTORM that detects and 
-tracks fiducial markers. From these data, the mean of the absolute values...
+tracks fiducial markers. From these data, ThunderSTORM returns the drift trajectory, as well as the positions of 
+the beads over time. We calculated the mean of the absolute values of the positions of the beads as our metric 
+for sample drift.
+
+For STORM data, we carried out redundant cross-correlation, so that we can track drift across the image series. 
+We calculated sample drift by taking the mean of the absolute values of the drift for each image subset.
+
+The remainder of the scripts are used to plot drift trajectories, convert localization data to a .txt file for 
+FRC (Fourier ring correlation) analysis, plot FRC data, plot localization precision, and plot dotplots for the 
+experimental repeats of fluorescent bead drift.
+
+# Repository structure
+There are several scripts within the repository:
+- 1
+- 2
