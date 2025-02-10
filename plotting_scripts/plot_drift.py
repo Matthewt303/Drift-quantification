@@ -8,7 +8,6 @@ import scipy.io
 from matplotlib.ticker import MultipleLocator, AutoMinorLocator
 from tqdm import tqdm
 import os
-import math
 import seaborn as sns
 
 ## Function to take user input
