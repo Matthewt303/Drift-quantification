@@ -413,7 +413,7 @@ def plot_locprec(loc_data, out):
 
     ratio = 1.0
 
-    ax.set_xlim(left=0, right=20)
+    ax.set_xlim(left=0, right=80)
 
     x_left, x_right = ax.get_xlim()
     y_low, y_high = ax.get_ylim()
