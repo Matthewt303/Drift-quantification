@@ -173,6 +173,24 @@ def extract_mat_bins(mat_data):
 
     return bin_data
 
+def extract_bin_xy(bin_data: 'np.ndarray') -> 'np.ndarray':
+
+    """
+    In:
+    - bin_data: 4-column array containing frames and bin drift
+
+    Out:
+    - Two column vectors, one containing x-drift data, the other
+    containing y-drift data
+
+    """
+
+    data = bin_data.copy()
+
+    x, y = np.abs(data[:, 1]), np.abs(data[:, 3])
+
+    return x, y
+
 def extract_mat_cont_data(mat_data):
 
     cont_data = np.hstack((mat_data['frames'], mat_data['x'],
@@ -380,6 +398,111 @@ def mean_and_std(bin_data, pixel_size, title, out):
         f.write('The mean drift along y is: ' + str(mean_y) + 'nm' + '\n')
         f.write('The drift standard deviation along x is: ' + str(std_x) + 'nm' + '\n')
         f.write('The drift standard deviation along y is: ' + str(std_y) + 'nm')
+
+def add_axes(x_drift: 'np.ndarray', y_drift: 'np.ndarray') -> 'np.ndarray':
+
+    """
+    This function stacks the drift data into one column and
+    adds an axis column to the left.
+
+    In:
+    x_drift: column vector array containing drfit data along x
+    y_drift: column vector array containing drift along y
+
+    Out:
+    drift_data: n x 2 array with axis specifier in first column,
+    drift quantity in second column   
+
+    """
+
+    all_drift = np.vstack((x_drift, y_drift)).reshape(-1, 1)
+
+    x_axis = ['x'] * x_drift.shape[0]
+
+    y_axis = ['y'] * y_drift.shape[0]
+
+    axes_list = x_axis + y_axis
+
+    axes_array = np.array(axes_list).reshape(-1, 1)
+
+    drift_data = np.hstack((axes_array, all_drift))
+
+    return drift_data
+
+def convert_drift_to_df(drift_data: 'np.ndarray', out: str) -> 'pd.DataFrame':
+
+    """
+    This function converts the drift data array to a pandas dataframe
+    by first saving it as a .txt file.
+
+    In:
+    drift_data: n x 2 array with axis specifier in first column,
+    drift quantity in second column.
+    out: output folder
+
+    Out:
+    A .txt file containing the drift data..
+    """
+
+    np.savetxt(out + '/all_bin_data.txt', drift_data,
+               fmt='%s', delimiter='\t',
+               header='Axis \t Drift (nm)' )
+
+def bin_dotplot(title: str, out: str):
+
+    """
+    This function loads the drift data and plots them as a dot plot.
+
+    In:
+    title: the name of the plot
+    out: where the plot should be saved.
+    """
+    
+    full_path = os.path.join(out, 'all_bin_data.txt')
+
+    df = pd.read_csv(full_path, sep='\t')
+    
+    fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
+
+    sns.set_theme(font='Arial')
+
+    graph = sns.stripplot(x=df.columns[0], y=df[df.columns[1]],
+                          data=df, s=15, color='midnightblue')
+    sns.pointplot(data=df, x=df.columns[0], y=df[df.columns[1]],
+                  errorbar='sd', markers='_', linestyles='none', capsize=0.2,
+                  linewidth=4.5, color='darkgreen')
+    graph.tick_params(labelsize=30, pad=5)
+
+    ratio = 1.0
+
+    x_left, x_right = ax.get_xlim()
+    y_low, y_high = ax.get_ylim()
+    ax.set_aspect(abs((x_right - x_left) / (y_low - y_high)) * ratio)
+
+    ax.tick_params(axis='y', which='major', length=6, direction='in')
+    ax.tick_params(axis='y', which='minor', length=3, direction='in')
+    ax.tick_params(axis='x', which='major', length=6, direction='in')
+    ax.tick_params(axis='x', which='minor', length=3, direction='in')
+
+    ax.yaxis.set_minor_locator(AutoMinorLocator(11))
+
+    ax.xaxis.label.set_color('black')
+    ax.yaxis.label.set_color('black')
+
+    ax.spines['bottom'].set_color('black')
+    ax.spines['top'].set_color('black')
+    ax.spines['right'].set_color('black')
+    ax.spines['left'].set_color('black')
+    ax.spines['bottom'].set_linewidth(2.0)
+    ax.spines['top'].set_linewidth(2.0)
+    ax.spines['right'].set_linewidth(2.0)
+    ax.spines['left'].set_linewidth(2.0)
+
+    ax.set_xlabel('Axis', labelpad=12, fontsize=40)
+    ax.set_ylabel(df.columns[1], labelpad=3, fontsize=40)
+
+    plt.savefig(out + '/' + title + '.png')
+    plt.savefig(out + '/'+ title + '.svg')
 
 ## Load ROI data and plot localisation precision
 
@@ -998,3 +1121,28 @@ def plot_localisation_precision():
     localisation_table = load_data(localisation_data_path)
 
     plot_locprec(loc_data=localisation_table, out=output_folder)
+
+def plot_dotplot_mat_bins():
+
+    pixel_size = 1
+
+    print('First enter input file.')
+    input_file = load_user_input()
+
+    print('Then enter output folder.')
+    output_folder = load_user_input()
+
+    print('Finally enter title.')
+    title = load_user_input()
+
+    data = load_mat_data(input_file)
+
+    bins = frame_filter(extract_mat_bins(data), cutoff=33000)
+
+    x_drift, y_drift = extract_bin_xy(bins)
+
+    bins_and_axes = add_axes(x_drift, y_drift)
+
+    convert_drift_to_df(bins_and_axes, out=output_folder)
+
+    bin_dotplot(title=title, out=output_folder)
