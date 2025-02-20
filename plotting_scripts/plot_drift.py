@@ -231,9 +231,9 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
 
     fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    ax.scatter(frames1, x_drift_bins, s=220, alpha=1.0,
+    ax.scatter(frames1, x_drift_bins, s=220, alpha=0.4,
                 facecolors='none', edgecolors='darkred')
-    ax.scatter(frames1, y_drift_bins, s=220, alpha=1.0,
+    ax.scatter(frames1, y_drift_bins, s=220, alpha=0.4,
                 facecolors='none', edgecolors='mediumblue')
     ax.plot(frames2, x_drift, 'darkred', linewidth=4.5, label='x-axis drift')
     ax.plot(frames2, y_drift, 'mediumblue', linewidth=4.5, label='y-axis drift')
@@ -942,7 +942,7 @@ def filter_frame(in_folder, out_folder, frame):
 
 def plot_from_fiji():
 
-    pixel_size, exp_time = 1, 100
+    pixel_size, exp_time = 1, 30
 
     print('First enter input file.')
     input_file = load_user_input()
