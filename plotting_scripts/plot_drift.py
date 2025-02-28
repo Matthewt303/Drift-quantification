@@ -12,7 +12,7 @@ import seaborn as sns
 
 ## Function to take user input
 
-def load_user_input():
+def load_user_input() -> str:
 
     """ This function loads user input for file paths, folders, or 
     titles for plots. It will not accept blank inputs and users will
@@ -50,7 +50,7 @@ def load_user_input():
 
 ## Functions for Fiji drift plots
 
-def load_data(path):
+def load_data(path: str) -> 'np.ndarray':
 
     """
     This function loads the content of a .csv file into a numpy array.
@@ -70,7 +70,7 @@ def load_data(path):
 
     return data
 
-def extract_bins(all_data):
+def extract_bins(all_data: 'np.ndarray') -> 'np.ndarray':
 
     """
     Extracts bins (in nm) from drift trajectory plots exported from Fiji. Also
@@ -83,7 +83,7 @@ def extract_bins(all_data):
 
     return all_data[:, 0:4]
 
-def extract_cont_data(all_data):
+def extract_cont_data(all_data: 'np.ndarray') -> 'np.ndarray':
 
     """
     Extracts curves (in nm) from plots exported from Fiji. Also
@@ -95,7 +95,7 @@ def extract_cont_data(all_data):
 
     return all_data[:, 4:8]
 
-def zero_initials(bin_data, line_data):
+def zero_initials(bin_data: 'np.ndarray', line_data: 'np.ndarray') -> 'np.ndarray':
 
     """
     Corrects the curve such that the firsts point for x-drift and y-drift
@@ -149,15 +149,25 @@ def zero_initials(bin_data, line_data):
 
     lines_cor = lines_cor[~np.isnan(lines_cor)].reshape(-1, 4)
 
-    bines_cor = bins_cor[~np.isnan(bins_cor)].reshape(-1, 4)
+    bins_cor = bins_cor[~np.isnan(bins_cor)].reshape(-1, 4)
     
     return bins_cor, lines_cor
 
 
 ## Functions for SMAP drift plots
 
-def load_mat_data(mat_path):
+def load_mat_data(mat_path: str) -> 'np.ndarray':
 
+    """
+    Loads drift trajectory data from RCC from a .mat file.
+
+    In:
+    mat_path - file path of .mat file
+
+    Out:
+    plot_data - array containing the drift trajectory, bins, and timepoints
+    """
+    
     if os.path.isfile(mat_path) is False:
 
         raise OSError('Invalid path specified or file does not exist.')
@@ -166,7 +176,17 @@ def load_mat_data(mat_path):
 
     return plot_data
 
-def extract_mat_bins(mat_data):
+def extract_mat_bins(mat_data: 'np.ndarray') -> 'np.ndarray':
+
+    """
+    Extracts the bin data from .mat file
+
+    In:
+    mat_data  - drift data from .mat file
+
+    Out:
+    bin_data - the drift of the bins in the .mat file
+    """
 
     bin_data = np.hstack((mat_data['frame_bins'], mat_data['x_bins'],
                           mat_data['frame_bins'], mat_data['y_bins']))
@@ -231,9 +251,9 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
 
     fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    ax.scatter(frames1, x_drift_bins, s=220, alpha=0.4,
+    ax.scatter(frames1, x_drift_bins, s=220, alpha=0.1,
                 facecolors='none', edgecolors='darkred')
-    ax.scatter(frames1, y_drift_bins, s=220, alpha=0.4,
+    ax.scatter(frames1, y_drift_bins, s=220, alpha=0.1,
                 facecolors='none', edgecolors='mediumblue')
     ax.plot(frames2, x_drift, 'darkred', linewidth=4.5, label='x-axis drift')
     ax.plot(frames2, y_drift, 'mediumblue', linewidth=4.5, label='y-axis drift')
@@ -536,7 +556,7 @@ def plot_locprec(loc_data, out):
 
     ratio = 1.0
 
-    ax.set_xlim(left=0, right=80)
+    ax.set_xlim(left=0, right=10)
 
     x_left, x_right = ax.get_xlim()
     y_low, y_high = ax.get_ylim()
