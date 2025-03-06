@@ -196,6 +196,8 @@ def extract_mat_bins(mat_data: 'np.ndarray') -> 'np.ndarray':
 def extract_bin_xy(bin_data: 'np.ndarray') -> 'np.ndarray':
 
     """
+    Extracts the bin data from a .csv file from ImageJ
+    
     In:
     - bin_data: 4-column array containing frames and bin drift
 
@@ -211,26 +213,68 @@ def extract_bin_xy(bin_data: 'np.ndarray') -> 'np.ndarray':
 
     return x, y
 
-def extract_mat_cont_data(mat_data):
+def extract_mat_cont_data(mat_data: 'np.ndarray') -> 'np.ndarray':
+
+    """
+    Extracts the drift trajectory plot points from the .mat file.
+
+    In:
+    mat_data - data from the .mat file
+
+    Out:
+    cont_data - x and y drift trajectory points from the .mat file
+    """
 
     cont_data = np.hstack((mat_data['frames'], mat_data['x'],
                            mat_data['frames'], mat_data['y']))
 
     return cont_data
 
-def frame_filter(data, cutoff):
+def frame_filter(data: 'np.ndarray', cutoff: int) -> 'np.ndarray':
+
+    """
+    Removes frames beyond the specified cutoff point
+
+    In:
+    data - drift data, either bins or continuous data
+    cutoff - frame number at which to filter
+
+    Out:
+    filtered data
+    """
 
     return data[(data[:, 0]) < cutoff]
 
 def save_mat_bins(mat_bins, num, out):
+
+    """
+    Probably redundant?
+    """
 
     np.savetxt(out + 'plot_values' + str(num) + '.csv',
                mat_bins, fmt='%.5e', delimiter=',')
 
 ## Plots for both
 
-def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
+def plot_all_data(bin_data: 'np.ndarray', line_data: 'np.ndarray',
+                  pixel_size: float, exp_time: int,
+                  title: str, out: str) -> None:
 
+    """
+    Plots the drift trajectory and saves it as a .png and .svg
+
+    In:
+    bin_data - drift from bins
+    line_data - drift trajectory points
+    pixel_size - the pixel size in nanometers at the sample plane
+    exp_time - exposure time of the camera in seconds
+    title - name of plot, becomes file name
+    out - folder where the images will be saved
+
+    Out:
+    None but image is saved in specified folder
+    """
+    
     plt.ioff()
 
     frames1 = bin_data[:, 0] * exp_time
@@ -251,14 +295,14 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
 
     fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    ax.scatter(frames1, x_drift_bins, s=220, alpha=0.1,
-                facecolors='none', edgecolors='darkred')
-    ax.scatter(frames1, y_drift_bins, s=220, alpha=0.1,
-                facecolors='none', edgecolors='mediumblue')
+    ax.scatter(frames1, x_drift_bins, s=220, alpha=0.05,
+                facecolors='none', edgecolors='darkred', label='x-axis drift point')
+    ax.scatter(frames1, y_drift_bins, s=220, alpha=0.05,
+                facecolors='none', edgecolors='mediumblue', label='y-axis drift point')
     ax.plot(frames2, x_drift, 'darkred', linewidth=4.5, label='x-axis drift')
     ax.plot(frames2, y_drift, 'mediumblue', linewidth=4.5, label='y-axis drift')
 
-    leg = plt.legend(bbox_to_anchor=(0.5, 1.13), loc='upper center', ncol=2)
+    leg = plt.legend(bbox_to_anchor=(0.5, 1.175), loc='upper center', ncol=2)
 
     for line in leg.get_lines():
         line.set_linewidth(3.5)
@@ -300,7 +344,21 @@ def plot_all_data(bin_data, line_data, pixel_size, exp_time, title, out):
     plt.savefig(out + '/' + str(title) + '.png')
     plt.savefig(out + '/' + str(title) + '.svg')
 
-def plot_x_histogram(bin_data, pixel_size, title, out):
+def plot_x_histogram(bin_data: 'np.ndarray', pixel_size: float,
+                     title: str, out: str):
+
+    """
+    Plots the x-axis drift bins and saves it as a .png and .svg
+
+    In:
+    bin_data - drift from bins
+    pixel_size - the pixel size in nanometers at the sample plane
+    title - name of plot, becomes file name
+    out - folder where the images will be saved
+
+    Out:
+    None but image is saved in specified folder
+    """
 
     plt.ioff()
 
@@ -351,7 +409,21 @@ def plot_x_histogram(bin_data, pixel_size, title, out):
     plt.savefig(out + '/' + str(title) + 'x_hist.svg')
 
 
-def plot_y_histogram(bin_data, pixel_size, title, out):
+def plot_y_histogram(bin_data: 'np.ndarray', pixel_size: float,
+                     title: str, out: str):
+
+    """
+    Plots the x-axis drift bins and saves it as a .png and .svg
+
+    In:
+    bin_data - drift from bins
+    pixel_size - the pixel size in nanometers at the sample plane
+    title - name of plot, becomes file name
+    out - folder where the images will be saved
+
+    Out:
+    None but image is saved in specified folder
+    """
 
     plt.ioff()
 
@@ -401,7 +473,22 @@ def plot_y_histogram(bin_data, pixel_size, title, out):
     plt.savefig(out + '/' + str(title) + 'y_hist.png')
     plt.savefig(out + '/' + str(title) + 'y_hist.svg')
 
-def mean_and_std(bin_data, pixel_size, title, out):
+def mean_and_std(bin_data: 'np.ndarray', pixel_size: float,
+                 title: str, out: str) -> None:
+
+    """
+    Plots the x-axis drift bins and saves it as a .png and .svg
+
+    In:
+    bin_data - drift from bins
+    pixel_size - the pixel size in nanometers at the sample plane
+    title - name of plot, becomes file name
+    out - folder where the images will be saved
+
+    Out:
+    None but a .txt file with the relevant statistics is saved in the
+    specified folder
+    """
 
     x = bin_data[:, 1] * pixel_size
 
@@ -423,7 +510,8 @@ def add_axes(x_drift: 'np.ndarray', y_drift: 'np.ndarray') -> 'np.ndarray':
 
     """
     This function stacks the drift data into one column and
-    adds an axis column to the left.
+    adds an axis column to the left. Purpose: reshape into
+    format more compatible with pandas dataframe.
 
     In:
     x_drift: column vector array containing drfit data along x
@@ -449,7 +537,7 @@ def add_axes(x_drift: 'np.ndarray', y_drift: 'np.ndarray') -> 'np.ndarray':
 
     return drift_data
 
-def convert_drift_to_df(drift_data: 'np.ndarray', out: str) -> 'pd.DataFrame':
+def convert_drift_to_df(drift_data: 'np.ndarray', out: str) -> None:
 
     """
     This function converts the drift data array to a pandas dataframe
@@ -468,7 +556,7 @@ def convert_drift_to_df(drift_data: 'np.ndarray', out: str) -> 'pd.DataFrame':
                fmt='%s', delimiter='\t',
                header='Axis \t Drift (nm)' )
 
-def bin_dotplot(title: str, out: str):
+def bin_dotplot(title: str, out: str) -> None:
 
     """
     This function loads the drift data and plots them as a dot plot.
@@ -535,12 +623,25 @@ def load_roi_locs(path):
 
     return roi_data
 
-def plot_locprec(loc_data, out):
+def plot_locprec(loc_data: 'np.ndarray', out: str) -> None:
+
+    """
+    Extracts and plots the localization precision as a histogram and saves
+    the graph as a .png and .svg
+
+    In:
+    loc_data - drift from bins
+    out - folder where the images will be saved
+
+    Out:
+    None but image is saved in specified folder
+    """
 
     plt.ioff()
 
     locprec = loc_data[:, -1]
 
+    # Removes abnormal localizations
     locprec = locprec[(locprec < 100)]
 
     weights = np.ones_like(locprec) / float(len(locprec))
@@ -598,7 +699,17 @@ def load_all_data(path):
 
     return locs
 
-def extract_xy(loc_data):
+def extract_xy(loc_data: 'np.ndarray') -> 'np.ndarray':
+
+    """
+    Extracts the xy localisations for FRC calculations.
+
+    In:
+    loc_data - localisation table from SMLM
+
+    Out:
+    xy_only - xy localisations from SMLM
+    """
 
     x = loc_data[:, 2].reshape(loc_data.shape[0], 1)
 
@@ -608,7 +719,16 @@ def extract_xy(loc_data):
 
     return xy_only
 
-def save_xy_locs(xy_data, title, out):
+def save_xy_locs(xy_data: 'np.ndarray', title: str, out: str) -> None:
+
+    """
+    Saves the xy localisations as a tab-separated .txt file.
+
+    In:
+    xy_data - xy localisations
+    title - name of file
+    out - folder where file will be saved 
+    """
 
     np.savetxt(out + '/' + str(title) + 'xy_for_FRC.txt', xy_data,
                fmt='%.5e', delimiter='\t')
