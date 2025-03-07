@@ -5,7 +5,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib as mpl
 import scipy.io
-from matplotlib.ticker import MultipleLocator, AutoMinorLocator
+from matplotlib.ticker import FormatStrFormatter, AutoMinorLocator
 from tqdm import tqdm
 import os
 import seaborn as sns
@@ -295,9 +295,9 @@ def plot_all_data(bin_data: 'np.ndarray', line_data: 'np.ndarray',
 
     fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    ax.scatter(frames1, x_drift_bins, s=220, alpha=0.05,
+    ax.scatter(frames1, x_drift_bins, s=220, alpha=0.009,
                 facecolors='none', edgecolors='darkred', label='x-axis drift point')
-    ax.scatter(frames1, y_drift_bins, s=220, alpha=0.05,
+    ax.scatter(frames1, y_drift_bins, s=220, alpha=0.009,
                 facecolors='none', edgecolors='mediumblue', label='y-axis drift point')
     ax.plot(frames2, x_drift, 'darkred', linewidth=4.5, label='x-axis drift')
     ax.plot(frames2, y_drift, 'mediumblue', linewidth=4.5, label='y-axis drift')
@@ -306,7 +306,11 @@ def plot_all_data(bin_data: 'np.ndarray', line_data: 'np.ndarray',
 
     for line in leg.get_lines():
         line.set_linewidth(3.5)
+        line.set_alpha(1.0)
     
+    for handle in leg.legend_handles:
+        handle.set_alpha(1.0)
+
     for text in leg.get_texts():
         text.set_fontsize(28)
 
@@ -339,13 +343,13 @@ def plot_all_data(bin_data: 'np.ndarray', line_data: 'np.ndarray',
     ax.spines['left'].set_linewidth(2.0)
 
     ax.set_xlabel('Time (s)', labelpad=6, fontsize=40)
-    ax.set_ylabel('Drift (nm)', labelpad=-6, fontsize=40)
+    ax.set_ylabel('Drift (nm)', labelpad=-5, fontsize=40)
 
     plt.savefig(out + '/' + str(title) + '.png')
     plt.savefig(out + '/' + str(title) + '.svg')
 
 def plot_x_histogram(bin_data: 'np.ndarray', pixel_size: float,
-                     title: str, out: str):
+                     title: str, out: str) -> None:
 
     """
     Plots the x-axis drift bins and saves it as a .png and .svg
@@ -389,6 +393,7 @@ def plot_x_histogram(bin_data: 'np.ndarray', pixel_size: float,
 
     #ax.xaxis.set_minor_locator(AutoMinorLocator(10))
     ax.yaxis.set_minor_locator(AutoMinorLocator(10))
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
@@ -410,7 +415,7 @@ def plot_x_histogram(bin_data: 'np.ndarray', pixel_size: float,
 
 
 def plot_y_histogram(bin_data: 'np.ndarray', pixel_size: float,
-                     title: str, out: str):
+                     title: str, out: str) -> None:
 
     """
     Plots the x-axis drift bins and saves it as a .png and .svg
@@ -454,6 +459,7 @@ def plot_y_histogram(bin_data: 'np.ndarray', pixel_size: float,
 
     #ax.xaxis.set_minor_locator(AutoMinorLocator(10))
     ax.yaxis.set_minor_locator(AutoMinorLocator(10))
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
@@ -742,7 +748,21 @@ def load_frc_plot_data(path):
 
     return plot_data
 
-def calc_frc_res(frc_data, title, out):
+def calc_frc_res(frc_data: 'np.ndarray', title: str, out: str) -> float:
+
+    """
+    This function calculates the FRC resolution at the 0.143 threshold
+    from a plot of the FRC curve.
+
+    In:
+    frc_data - the xy coordinates of the FRC curve
+    title - file name
+    out - where the file containing the resolution will be saved.
+
+    Out:
+    res_fourier - the resolution in spatial frequency units 
+    frc[intercept][0] - where the FRC curve intercepts the threshold
+    """
 
     v = frc_data[:, 0]
     frc = frc_data[:, 1]
@@ -765,7 +785,24 @@ def calc_frc_res(frc_data, title, out):
     return res_fourier, frc[intercept][0]
 
 
-def plot_frc_curve(frc_data, rcc_data, x1, y1, x2, y2, title, out):
+def plot_frc_curve(frc_data: 'np.ndarray', rcc_data: 'np.ndarray',
+                   x1: float, y1: float, x2: float, y2: float,
+                   title: str, out: str) -> None:
+    
+    """
+    This function plots the curve for drift corrected data and non-drift-
+    corrected data. It also plots the 0.143 threshold as a straight
+    horizontal line. The intercepts of the FRC curves with the threshold
+    are shown as circular markers. The plot is saved as .svg and .png files.
+
+    In:
+    frc_data - non-drift corrected FRC  curve xy coordinates
+    rcc_data - drift-corrected FRC curve xy coordinates
+    x1 - spatial frequency at which the non-RCC curve intercepts the threshold
+    x2 - spatial frequency at which the RCC curve intercepts the threshold 
+    title - name of image file containing the plot
+    out - where the image files will be saved
+    """
 
     plt.ioff()
 
@@ -836,7 +873,18 @@ def plot_frc_curve(frc_data, rcc_data, x1, y1, x2, y2, title, out):
 
 ## Calculate mean and SD for all beads
 
-def extract_files(folder_path):
+def extract_files(folder_path: str) -> list[str]:
+
+    """
+    This function extracts the file paths of all files beginning with
+    'fidu', i.e. the localisation tables of all bead image sequences.
+
+    In:
+    folder_path - path to directory where localisation tables are stored
+
+    Out:
+    all_plot_paths - list containing the file paths of all localisation tables
+    """
 
     plot_files = os.listdir(folder_path)
 
