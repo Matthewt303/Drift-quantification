@@ -295,9 +295,9 @@ def plot_all_data(bin_data: 'np.ndarray', line_data: 'np.ndarray',
 
     fig, ax = plt.subplots(figsize=(11, 11), dpi=500)
 
-    ax.scatter(frames1, x_drift_bins, s=220, alpha=0.009,
+    ax.scatter(frames1, x_drift_bins, s=220, alpha=1.0,
                 facecolors='none', edgecolors='darkred', label='x-axis drift point')
-    ax.scatter(frames1, y_drift_bins, s=220, alpha=0.009,
+    ax.scatter(frames1, y_drift_bins, s=220, alpha=1.0,
                 facecolors='none', edgecolors='mediumblue', label='y-axis drift point')
     ax.plot(frames2, x_drift, 'darkred', linewidth=4.5, label='x-axis drift')
     ax.plot(frames2, y_drift, 'mediumblue', linewidth=4.5, label='y-axis drift')
@@ -648,7 +648,7 @@ def plot_locprec(loc_data: 'np.ndarray', out: str) -> None:
     locprec = loc_data[:, -1]
 
     # Removes abnormal localizations
-    locprec = locprec[(locprec < 100)]
+    locprec = locprec[(locprec < 51)]
 
     weights = np.ones_like(locprec) / float(len(locprec))
 
@@ -663,7 +663,7 @@ def plot_locprec(loc_data: 'np.ndarray', out: str) -> None:
 
     ratio = 1.0
 
-    ax.set_xlim(left=0, right=10)
+    ax.set_xlim(left=0, right=50)
 
     x_left, x_right = ax.get_xlim()
     y_low, y_high = ax.get_ylim()
@@ -675,6 +675,7 @@ def plot_locprec(loc_data: 'np.ndarray', out: str) -> None:
     ax.tick_params(axis='x', which='minor', length=3, direction='in')
 
     ax.yaxis.set_minor_locator(AutoMinorLocator(10))
+    ax.yaxis.set_major_formatter(FormatStrFormatter('%.2f'))
 
     ax.xaxis.label.set_color('black')
     ax.yaxis.label.set_color('black')
@@ -747,6 +748,31 @@ def load_frc_plot_data(path):
                               skip_header=1, delimiter=',')
 
     return plot_data
+
+def sortlocs_even_odd_frames(locs: 'np.ndarray') -> 'np.ndarray':
+
+    """
+    This function sorts the localisation table such that the first half
+    of localisations correspond to localisations from even-numbered frames
+    and the second half corresponds to localisations from odd-numbered frames
+
+    In:
+    locs - the localisation table
+
+    Out:
+    sorted_locs - the localisation table organised as described above
+    """
+
+    even_locs = locs[locs[:, 1] % 2 == 0]
+
+    odd_locs = locs[locs[:, 1] % 2 == 1]
+
+    sorted_locs = np.vstack((even_locs, odd_locs))
+
+    print(sorted_locs[0:3, :])
+    print(sorted_locs[-4:-1, :])
+    
+    return sorted_locs
 
 def calc_frc_res(frc_data: 'np.ndarray', title: str, out: str) -> float:
 
@@ -1270,6 +1296,27 @@ def load_frc_data():
     localisations = load_data(loc_file)
 
     xy_coords = extract_xy(localisations)
+
+    save_xy_locs(xy_coords, title, output_folder)
+
+    print('Data are now ready for FRC analysis.')
+
+def load_frc_data_oddeven():
+
+    print('Enter path to localisation files.')
+    loc_file = load_user_input()
+
+    print('Enter where you want files to be saved.')
+    output_folder = load_user_input()
+
+    print('Finally enter a title for this set of data.')
+    title = load_user_input()
+
+    localisations = load_data(loc_file)
+
+    sorted_localisations = sortlocs_even_odd_frames(localisations)
+
+    xy_coords = extract_xy(sorted_localisations)
 
     save_xy_locs(xy_coords, title, output_folder)
 
